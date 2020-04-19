@@ -1,0 +1,10 @@
+.am-content {
+	padding-bottom: 0;
+}
+.am-title {
+	padding: 0.3rem;
+	font-size: 0.36rem;
+	color: #333333;
+	font-weight: bold;
+	border-bottom: solid 1px #e2e2e2;
+}

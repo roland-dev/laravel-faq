@@ -1,0 +1,142 @@
+* {
+	padding: 0;
+	margin-bottom: 0;
+	border: 0;
+}
+
+body {
+	line-height: 1.1;
+}
+
+.clearfix {
+	zoom: 1;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+
+ul {
+	padding-left: 0;
+}
+
+li {
+	list-style: none;
+}
+
+p, h1 {
+	margin: 0;
+	padding: 0;
+}
+
+.am-head {
+	position:fixed;
+	top: 0;
+	width: 7.50rem;
+	height: 0.93rem;
+	background-color: #ffffff;
+	box-shadow: 0px 0px 10px 0px rgba( 0, 0, 0, 0.1);
+	padding: 0.05rem 0.27rem 0rem;
+	text-align: center;
+	z-index: 100;
+}
+
+.am-head img {
+	height: 100%;
+}
+
+.am-head .am-head-share {
+	position: absolute;
+	float: right;
+	right: 0;
+	top: 0.03rem;
+	width: 0.88rem;
+	height: 0.88rem;
+}
+
+.am-head .am-head-back {
+	position: absolute;
+	float: left;
+	left: 0.3rem;
+	top: 0.29rem;
+	width: 0.21rem;
+	height: 0.41rem;
+	transform:rotate(180deg);
+	-ms-transform:rotate(180deg); /* Internet Explorer */
+	-moz-transform:rotate(180deg); /* Firefox */
+	-webkit-transform:rotate(180deg); /* Safari 和 Chrome */
+	-o-transform:rotate(180deg); /* Opera */
+}
+
+.am-content {
+	padding-top: 0.93rem;
+	padding-bottom: 0.98rem;
+}
+
+.am-footer {
+	background-color: #F8F8F8;
+	padding: 0.4rem 0;
+	text-align: center;
+}
+
+.am-footer-img {
+	font-size: 0.164rem;
+	line-height: 0.44rem;
+	color: #666666;
+	margin-bottom: 0.19rem;
+}
+
+
+.am-footer-text {
+	font-size: 0.24rem;
+	line-height: 0.36rem;
+	color: #999999;
+}
+
+.am-footer-text span {
+	color: #c9a063;
+}
+
+.am-menu {
+	position: fixed;
+	bottom: 0;
+	width: 7.5rem;
+	height: 0.98rem;
+	background-color: #ffffff;
+	box-shadow: 0px -1px 0px 0px #e2e2e2;
+}
+
+.am-menu-ulist li {
+	float: left;
+	width: 33%;
+	margin-top: 0.08rem;
+	height: 0.87rem;
+}
+
+.am-menu-ulist li div {
+	width: 0.56rem;
+	text-align: center;
+	margin: auto;
+}
+
+.am-menu-ulist li img {
+	width: 0.56rem;
+	height: 0.56rem;
+}
+
+.am-menu-ulist li p {
+	margin: 0;
+	font-size: 0.2rem;
+	color: #999999;
+	padding: 0.02rem 0 0.09rem;
+	line-height: 0.2rem;
+}
+
+.am-menu-ulist li.active p {
+	color: #333333;
+}

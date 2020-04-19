@@ -1,0 +1,63 @@
+.am-content {
+	padding-bottom: 0;
+}
+.am-item {
+	margin-top: 0.3rem;
+}
+.am-item-title {
+	border-left: solid 0.08rem #c79f62;
+	padding-left:0.22rem ;
+	height: 0.32rem;
+	font-size: 0.32rem;
+	font-weight: bold;
+	line-height: 0.32rem;
+	color: #333333;
+}
+.am-item ul {
+	margin: 0.3rem 0.3rem 0;
+}
+.am-item ul li .hd {
+	font-size: 0.28rem;
+	font-weight: 500;
+	color: #333333;
+	padding: 0.3rem 0;
+	border-bottom: solid 1px #E2E2E2;
+}
+
+.am-item ul li .hd img {
+	height: 0.2rem;
+	width: 0.12rem;
+	float: right;
+	margin-right: 0.04rem;
+	margin-top: 0.04rem;
+	transform:rotate(90deg);
+	-ms-transform:rotate(90deg); /* Internet Explorer */
+	-moz-transform:rotate(90deg); /* Firefox */
+	-webkit-transform:rotate(90deg); /* Safari 和 Chrome */
+	-o-transform:rotate(90deg); /* Opera */
+}
+
+.am-item ul li.active .hd img {
+	transform:rotate(270deg);
+	-ms-transform:rotate(270deg); /* Internet Explorer */
+	-moz-transform:rotate(270deg); /* Firefox */
+	-webkit-transform:rotate(270deg); /* Safari 和 Chrome */
+	-o-transform:rotate(270deg); /* Opera */
+}
+
+.am-item ul li .bd{
+	display: none;
+	padding: 0.3rem;
+	font-size: 0.28rem;
+	line-height: 0.4rem;
+	color: #666666;
+	border-bottom: solid 1px #E2E2E2;
+}
+
+.am-item ul li.active .bd{
+	display: block;
+}
+
+
+
+

@@ -1,0 +1,123 @@
+.am-content .am-content-title {
+	margin-top: 0.33rem;
+	margin-left: 0.32rem;
+	font-size: 0.36rem;
+	font-weight: bold;
+	color: #333333;
+	margin-bottom: 0.33rem;
+}
+
+.am-content .am-slider-default {
+	margin-bottom: 0;
+	box-shadow: 0 0 0.02rem #FFFFFF;
+}
+
+.am-slider .am-slides img {
+	margin: 0.02rem 0.3rem;
+	width: 6.9rem;
+	height: 2.96rem;
+	box-shadow: 0rem 0rem 0.2rem 0rem rgba(0, 0, 0, 0.2);
+	background-color: #ffffff;
+	border-radius: 0.2rem;
+}
+
+.am-news {
+	margin-top: 0.23rem;
+}
+
+.am-news-nav {
+	padding: 0 0.06rem;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	border-bottom: 0.01rem solid #e2e2e2;
+}
+
+.am-news-nav ul {
+	height: 0.66rem;
+	margin-bottom: 0;
+	display: inline;
+	white-space: nowrap;
+}
+
+.am-news-nav li {
+	font-size: 0.28rem;
+	line-height: 0.66rem;
+	color: #333333;
+	padding: 0 0.24rem;
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.am-news-nav li.active {
+	color: #ee2315;
+}
+
+.am-news-nav-underline {
+	width: 0.56rem;
+	height: 0.04rem;
+	background-color: #EE2315;
+	border-radius: 0.02rem;
+	bottom: -0.04rem;
+	margin: auto;
+	display: none;
+}
+
+.am-news-nav li.active .am-news-nav-underline {
+	display: block;
+}
+
+.am-news-nav .left-cover img,
+.am-news-nav .right-cover img {
+	height: 0.66rem;
+}
+
+.am-news-nav .left-cover {
+	position: absolute;
+	top: 5.23rem;
+	left: 0;
+	display: none;
+	transform:rotate(180deg);
+	-ms-transform:rotate(180deg); /* Internet Explorer */
+	-moz-transform:rotate(180deg); /* Firefox */
+	-webkit-transform:rotate(180deg); /* Safari 和 Chrome */
+	-o-transform:rotate(180deg); /* Opera */
+}
+.am-news-nav .right-cover {
+	position: absolute;
+	top: 5.23rem;
+	right: 0;
+}
+
+.am-news-item {
+	position: relative;
+	padding: 0.3rem 0.3rem 0.3rem 0.29rem;
+	border-bottom: 0.01rem solid #e2e2e2;
+}
+
+.am-news-item-title {
+	width: 4.53rem;
+	float: left;
+	margin-right: 0.2rem;
+}
+
+.am-news-item-title .title {
+	font-size: 0.32rem;
+	line-height: 0.48rem;
+	color: #333333;
+}
+
+.am-news-item-title .time {
+	position: absolute;
+	font-size: 0.24rem;
+	line-height: 0.44rem;
+	color: #999999;
+	bottom: 0.3rem;
+}
+
+.am-news-item-img img {
+	width: 2.18rem;
+	height: 1.62rem;
+	background-color: #ffffff;
+	border-radius: 0.04rem;
+	border: solid 0.01rem #e2e2e2;
+}

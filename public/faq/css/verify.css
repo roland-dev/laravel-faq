@@ -1,0 +1,37 @@
+.am-content {
+	padding-bottom: 0;
+}
+.am-verify {
+	margin: 0.3rem;
+}
+.am-verify h1 {
+	font-size: 0.36rem;
+	color: #333333;
+}
+.am-verify p {
+	margin-top: 0.18rem;
+	font-size: 0.26rem;
+	color: #666666;
+	line-height: 0.4rem;
+}
+
+.am-item {
+	margin: 0.6rem 0.32rem 0;
+}
+.am-item-title {
+	font-size: 0.26rem;
+	font-weight: bold;
+	color: #000000;
+}
+.am-item-text {
+	margin-top: 0.22rem;
+}
+.am-item-text p{
+	margin-bottom:0.6rem;
+	font-size: 0.26rem;
+	line-height: 0.45rem;
+	color: #666666;
+}
+.am-item-text p a {
+	color: #c79f62;
+}
