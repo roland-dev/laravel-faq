@@ -35,10 +35,10 @@ class IndexController extends Controller
 		$question = Question::find($id) -> toArray();
 		// dd($question);
 		return view('faq.detail', [
-			'questions' => array_get($question[0], 'questions'),
-			'answers' => array_get($question[0], 'answers'),
-			'resolvetimes' => array_get($question[0], 'resolvetimes'),
-			'unresolvetimes' => array_get($question[0], 'unresolvetimes'),
+			'questions' => array_get($question, 'questions'),
+			'answers' => array_get($question, 'answers'),
+			'resolvetimes' => array_get($question, 'resolvetimes'),
+			'unresolvetimes' => array_get($question, 'unresolvetimes'),
 			'line' => $line,
 			'id' => $id
 		]);

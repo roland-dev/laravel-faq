@@ -48,4 +48,34 @@ class ApiController extends Controller
         ];
 		return $res;
 	}
+
+    public function search(Request $request) {
+        $params = $request -> all();
+        $productLine = $params['product_line'];
+        $value = $params['value'];
+        if(!empty($value)){
+            return Question::where([['questions', 'like', "%$value%"]]) 
+                -> where('product_line', $productLine)
+                -> get();
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -104,10 +104,11 @@
 				var _product_line = $('#input_product_line').val();
                 if (_val != '') {
                     $.ajax({
-                        url: '/qyapp.php?s=/faq/index/searchmsg&product_line='+ _product_line,
+                        url: '/faq/api/search',
                         type: 'post',
-                        dataType: 'json',
+                        // dataType: 'json',
                         data: {
+                            product_line: _product_line,
                             value: _val
                         },
                         success: function(_d) {

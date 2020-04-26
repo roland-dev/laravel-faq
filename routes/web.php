@@ -133,4 +133,19 @@ Route::get('/faq/home/detail', 'Faq\IndexController@detail');
 // 相关api文件
 // 问题是否已解决
 Route::post('/faq/api/solve', 'Faq\ApiController@solve');
+Route::post('/faq/api/search', 'Faq\ApiController@search');
+
 // ------------------------- end faq -------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
