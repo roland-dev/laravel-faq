@@ -11,7 +11,7 @@ class Question extends Model
     public $timestamps = false;
 
     // 搜索问题并进行分页
-    publick function searchQuestion($conditions, $pageSize = -1) {
+    public function searchQuestion($conditions, $pageSize = -1) {
     	$model = self::orderBy('id', 'desc');
         foreach ($cond as $k => $v) {
             // 相同分类搜索使用in_array来判断的
