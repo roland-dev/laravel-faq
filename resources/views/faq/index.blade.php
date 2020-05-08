@@ -23,7 +23,7 @@
                     <div class="weui_search_inner">
                         <i class="weui_icon_search"></i>
                         <input type="search" class="weui_search_input" id="search_input" placeholder="搜索" />
-						<input type="hidden" class="weui_search_input" id="input_product_line" placeholder="" value="productLine" />
+						<input type="hidden" class="weui_search_input" id="input_product_line" placeholder="" value="{{ $line }}"/>
                         <a href="javascript:" class="weui_icon_clear" id="search_clear"></a>
                     </div>
                     <label for="search_input" class="weui_search_text" id="search_text">
@@ -36,7 +36,7 @@
             <!-- 输入无效关键字确认后弹出跳转二维码扫描内容 -->
             <!-- dn = display:none -->
             <div id="no_use_key" class="no_use_key dn">
-                未搜到与关键字相关问题<br/>请重新搜索或向我们<a href="/qyapp.php?s=/faq/index/attention_us">直接反馈</a>
+                未搜到与关键字相关问题<br/>请重新搜索或向我们<a href="/faq/index/attention_us">直接反馈</a>
             </div>
 
             <!-- 输入有效关键字自动补全弹出关键字相关问题 -->
@@ -67,6 +67,8 @@
                 </a>
                 @endforeach
             </div>
+            
+            
         </div>
     </div>
 </body>
@@ -111,17 +113,16 @@
                             product_line: _product_line,
                             value: _val
                         },
-                        success: function(_d) {
-                            // console.log(_d)
+                        success: function(d) {
                             $("#no_use_key").addClass("dn");
                             $("#search_show").addClass("dn");
-                            if (_d.rcode) {
+                            if (d.code === 0) {
                                 $("#search_show").empty();
-                                for (var i = 0; i < _d.data.length; i++) {
+                                for (var i = 0; i < d.data.length; i++) {
                                     var html = '<div class="weui_cell">' +
                                         '<div class="weui_cell_bd weui_cell_primary">' +
-                                        '<a href="/qyapp.php?s=/faq/index/page_detail&faq_question_id=' + _d.data[i].faq_question_id + '&product_line=productLine' + '">' +
-                                        '<p><i class="weui_icon_search"></i>' + _d.data[i].questions + '</p>' +
+                                        '<a href="/faq/home/detail?faq_question_id=' + d.data[i].id + '&product_line=' + _product_line + '">' +
+                                        '<p><i class="weui_icon_search"></i>' + d.data[i].questions + '</p>' +
                                         '</a>' +
                                         '</div>' +
                                         '</div>'

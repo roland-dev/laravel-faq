@@ -125,15 +125,21 @@ Route::get('/home/test/test23', 'TestController@test23');
 // ------------------------ start faq --------------------
 // 常见问题前台和后台
 Route::get('/faq/admin', 'FaqAdmin\IndexController@index');
+Route::get('/faq/admin/rank_list', 'FaqAdmin\IndexController@rank');
 Route::get('/faq/home', 'Faq\IndexController@index');
 
 // 文章详情页
 Route::get('/faq/home/detail', 'Faq\IndexController@detail');
+// 联系我们
+Route::get('/faq/index/attention_us', 'Faq\IndexController@attention');
 
 // 相关api文件
 // 问题是否已解决
 Route::post('/faq/api/solve', 'Faq\ApiController@solve');
 Route::post('/faq/api/search', 'Faq\ApiController@search');
+
+Route::get('/faq/api/category', 'FaqAdmin\ApiController@categoryList');
+Route::get('/faq/api/question', 'FaqAdmin\ApiController@questionList');
 
 // ------------------------- end faq -------------------
 

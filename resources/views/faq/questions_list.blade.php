@@ -38,7 +38,7 @@
             <!-- 输入无效关键字确认后弹出跳转二维码扫描内容 -->
             <!-- dn = display:none -->
             <div id="no_use_key" class="no_use_key dn">
-                未搜到与关键字相关问题<br/>请重新搜索或向我们<a href="/qyapp.php?s=/faq/index/attention_us">直接反馈</a>
+                未搜到与关键字相关问题<br/>请重新搜索或向我们<a href="/faq/index/attention_us">直接反馈</a>
             </div>
 
             <!-- 输入有效关键字自动补全弹出关键字相关问题 -->
@@ -652,49 +652,6 @@
                 return false;
             }
         })
-    });
-	
-	wx.config({
-        debug: false,
-        appId: '<?php echo $signPackage["appId"];?>',
-        timestamp: <?php echo $signPackage["timestamp"];?>,
-        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
-        signature: '<?php echo $signPackage["signature"];?>',
-        jsApiList: [
-            // 所有要调用的 API 都要加到这个列表中
-            'onMenuShareTimeline', "onMenuShareAppMessage", "onMenuShareQQ"
-        ]
-    });
-    // 在这里调用 API
-    var strDesc = "众赢量化工作室，为您提供专属、专业的投顾服务。";
-    var strLink = window.location.href;
-    var strImgUrl = window.location.origin + "/files/public/big_logo.jpg";
-
-    wx.ready(function() {
-        //分享朋友圈
-        wx.onMenuShareTimeline({
-            title: $("head title").text(), // 分享标题
-            desc: strDesc, //分享描述
-            link: strLink, // 分享链接
-            imgUrl: strImgUrl, // 分享图标
-
-        });
-
-        //分享给微信好友
-        wx.onMenuShareAppMessage({
-            title: $("head title").text(), // 分享标题
-            desc: strDesc, //分享描述
-            link: strLink, // 分享链接
-            imgUrl: strImgUrl, // 分享图标
-        });
-
-        //分享到QQ
-        wx.onMenuShareQQ({
-            title: $("head title").text(), // 分享标题
-            desc: strDesc, //分享描述
-            link: strLink, // 分享链接
-            imgUrl: strImgUrl, // 分享图标
-        });
     });
 </script>
 

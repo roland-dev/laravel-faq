@@ -12,7 +12,7 @@ use App\Models\ProductLine;
 
 
 class IndexController extends Controller
-{
+{	
 	// 常见问题主页
 	public function index(){
 		$id = Input::get('faq_category_id', 1);
@@ -42,5 +42,10 @@ class IndexController extends Controller
 			'line' => $line,
 			'id' => $id
 		]);
+	}
+
+	// 联系我们
+	public function attention() {
+		return view('faq.attention_us');
 	}
 }

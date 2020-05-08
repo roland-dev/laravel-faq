@@ -51,13 +51,28 @@ class ApiController extends Controller
 
     public function search(Request $request) {
         $params = $request -> all();
+        // dd($params);
         $productLine = $params['product_line'];
         $value = $params['value'];
-        if(!empty($value)){
-            return Question::where([['questions', 'like', "%$value%"]]) 
-                -> where('product_line', $productLine)
+        $questions = [];
+        if (!empty($value)) {
+            // 模糊查询使用like来查找，模糊查询后面的字段是"% %"的格式，这里需要强调一下，一定要使用双引号，不然会失效。
+            // limit 用来限制
+            $questions = Question::where([['questions', 'like', "%$value%"]]) 
+                -> where('product_line', 'like', "%$productLine%")
+                -> limit(10)
                 -> get();
         }
+        $count = count($questions);
+
+        $res = [
+            "code"    =>    0,
+            "count"   =>    $count,
+            "msg"     =>    "成功",
+            "data"    =>    $questions
+        ];
+
+        return $res;
     }
 }
 
