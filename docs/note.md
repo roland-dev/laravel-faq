@@ -191,6 +191,22 @@ php artisan make:model Home/Member
 1. 创建一个表单页面
 2. 创建需要的路由、方法
 
+use Illuminate\Http\Request
+
+protected function validateLogin(Request $request)
+{	
+	// 可以使用系统默认的验证提示语，也可以自定义系统提示语
+	// 自定义的系统提示语,是validata()的第二个参数
+    $request->validate([ 
+        'username' => 'required|string',
+        'password' => 'required|string',
+        'captcha' => ['required', 'captcha'],
+    ], [
+        'captcha.required' => '验证码不能为空',
+        'captcha.captcha' => '请输入正确的验证码',
+    ]);
+}
+
 ### 手册中的HTTP----验证
 
 如果得知一个请求类型？
@@ -445,6 +461,23 @@ c. 关联模型的关联方法  确认哪个是主表，哪个是副表，当前
 创建需要的模型
 注意：根据手册中记录的语法要求，不需要给关系表单独创建模型。
 该处只需要单独的给keyword创建模型即可
+
+php artisan route:list    // 命令行查询路由列表
+
+A RESTful接口路由方式
+
+Route::resource('users', 'UsersController');
+
+路由对应方法名:
+Verb          Path                        Action  Route Name
+GET           /users                      index   users.index
+GET           /users/create               create  users.create
+POST          /users                      store   users.store
+GET           /users/{user}               show    users.show
+GET           /users/{user}/edit          edit    users.edit
+PUT|PATCH     /users/{user}               update  users.update
+DELETE        /users/{user}               destroy users.destroy
+
 
 
 

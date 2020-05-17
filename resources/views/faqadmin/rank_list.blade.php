@@ -249,7 +249,7 @@
     function getCategoryList(current_page){
         current_page = current_page ? current_page : 1
         $.ajax({
-            url: '/api/faq/category',
+            url: '/api/faq/categories',
             type: 'get',
             data: {
                 product_line: productLine,
@@ -295,9 +295,8 @@
         }
 
         $.ajax({
-            url: '/api/faq/category',
+            url: '/api/faq/categories',
             type: 'post',
-            dataType: 'json',
             data: {
                 faq_category_name: name,
                 sequence: sequence,
@@ -319,14 +318,10 @@
 
     // 查看分类
     function viewCategory(id) {
-        $("#editRank").show()
+        $("#editRank").modal('show')
          $.ajax({
-            url: '/api/faq/category_view',
+            url: '/api/faq/categories/' + id,
             type: 'get',
-            dataType: 'json',
-            data: {
-                category_id: id,
-            },
             success: function(d) {
                 if(d.code == 0){
                     $('#editSequence').val(d.data.sequence);
@@ -348,9 +343,8 @@
         var line = $('#editLine').val();
 
         $.ajax({
-            url: '/api/faq/category_update',
-            type: 'get',
-            dataType: 'json',
+            url: '/api/faq/categories/'+id,
+            type: 'PATCH',
             data: {
                 category_id: id,
                 product_line: line,
@@ -368,16 +362,18 @@
         });
     }
 
+    function showDel(params) {
+        $("#delcfmModal").modal('show')
+    }
+
     function delCategory(id) {
         $.ajax({
-            url: '/api/faq/category_delete',
-            type: 'post',
-            data: {
-                category_id: id,
-            },
+            url: '/api/faq/categories/' + id,
+            type: 'DELETE',
             success: function(d) {
                 if(d.code == 0){
                     alert("删除成功！")
+                    getCategoryList()
                 }
             },
             error: function(err) {

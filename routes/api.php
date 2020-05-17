@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+// A RESTful接口路由方式
+
+//路由对应方法名:
+// Verb          Path                             Action  Route Name
+// GET           /users                           index   categories.index
+// GET           /categories/create               create  categories.create
+// POST          /categories                      store   categories.store
+// GET           /categories/{user}               show    categories.show
+// GET           /categories/{user}/edit          edit    categories.edit
+// PUT|PATCH     /categories/{user}               update  categories.update
+// DELETE        /categories/{user}               destroy categories.destroy
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -21,13 +32,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // 问题是否已解决
 Route::post('/faq/solve', 'Faq\ApiController@solve');
 Route::post('/faq/search', 'Faq\ApiController@search');
-Route::resource('/faq/categories', 'FaqAdmin\ApiController');
-
-// Route::get('/faq/category', 'FaqAdmin\ApiController@categoryList');
-// Route::get('/faq/category_view', 'FaqAdmin\ApiController@viewCategory');
-// Route::post('/faq/category', 'FaqAdmin\ApiController@createCategory');
-// Route::post('/faq/category_delete', 'FaqAdmin\ApiController@deleteCategory');
-// Route::post('/faq/category_update', 'FaqAdmin\ApiController@updateCategory');
 
 
-Route::get('/faq/question', 'FaqAdmin\ApiController@questionList');
+
+Route::resource('/faq/categories', 'FaqAdmin\CategoryController');
+
+Route::resource('/faq/questions', 'FaqAdmin\QuestionController');
