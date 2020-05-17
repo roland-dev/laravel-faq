@@ -45,7 +45,7 @@
             $(this).addClass("cur");
             $('.nosolve').removeClass("cur");
             $.ajax({
-                url: '/faq/api/solve',
+                url: '/api/faq/solve',
                 type: 'post',
                 dataType: 'json',
                 data: {
@@ -71,7 +71,7 @@
             $(this).addClass("cur");
             $('.solve').removeClass("cur");
             $.ajax({
-                url: '/faq/api/solve',
+                url: '/api/faq/solve',
                 type: 'post',
                 dataType: 'json',
                 data: {

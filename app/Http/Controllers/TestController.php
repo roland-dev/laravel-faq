@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Input;
 // 引入DB模块(已定义可以直接使用)
 use DB;
 // 引入模型
@@ -25,7 +24,7 @@ class TestController extends Controller
     //test2 测试input获取数据
     public function test2(){
     	// 获取一个id如果没有则使用第二个参数当默认值
-    	echo Input::get('id', '10086');
+    	// echo Input::get('id', '10086');
     	echo '<br/>';
     	// 获取全部的值(返回数组形式)
     	$all = Input::all();
@@ -40,7 +39,7 @@ class TestController extends Controller
     	// 取反
     	// dd(Input::except('name'));
     	// has 判断存在参数，返回布尔值
-    	dd(Input::has('name'));
+    	// dd(Input::has('name'));
     }
 
     public function add(){
@@ -170,23 +169,15 @@ class TestController extends Controller
 
     // 自动验证
     public function test13(Request $request){
-        if (Input::method() == "POST") {
-            $this -> validate($request, [
-                // 具体的规则
-                // 字段 => 验证规则1|验证规则2
-                // min和max会自动根据字段是字符串或者数字来改变判定规则
-                'name' => 'required|min:2|max:20',
-                'age' => 'required|Integer|min:1|max:100',
-                'email' => 'required|email',
-                'captcha' => 'required|captcha'
-            ]);
-
-            // 添加验证码区域
-        } else {
-            // 展示视图，传递数据
-            return view('home.test.test13');
-        }
-        
+        $validatedData = $request->validate([
+        //     // 具体的规则
+        //     // 字段 => 验证规则1|验证规则2
+        //     // min和max会自动根据字段是字符串或者数字来改变判定规则
+            'name' => 'required|min:2|max:20',
+            'age' => 'required|Integer|min:1|max:100',
+            'email' => 'required|email',
+            'captcha' => 'required|captcha'
+        ]);     
     }
 
     // 文件上传

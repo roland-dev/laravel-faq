@@ -106,7 +106,7 @@
 				var _product_line = $('#input_product_line').val();
                 if (_val != '') {
                     $.ajax({
-                        url: '/faq/api/search',
+                        url: '/api/faq/search',
                         type: 'post',
                         // dataType: 'json',
                         data: {

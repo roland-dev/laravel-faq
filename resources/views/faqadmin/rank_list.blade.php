@@ -74,7 +74,10 @@
                                 <td>{{ $category->faq_category_name }}</td>
                                 <td>{{ $category->update_time }}</td>
                                 <td>{{ $category->create_time }}</td>
-                                <td class="text-center collapsing"><a href="" data-toggle="modal" data-target="#seeRank">查看</a><a href="" data-toggle="modal" data-target="#editRank">编辑</a><a href="javascript:void(0);" class="del">删除</a></td>
+                                <td class="text-center collapsing">
+                                    <a href="javascript:void(0);" onclick="viewCategory({{ $category->id }})">编辑</a>
+                                    <a href="javascript:void(0);" class="del" onclick="delCategory({{ $category->id }})">删除</a>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -97,12 +100,12 @@
                 <div class="modal-body">
                     <!--<form class="form-horizontal" id="addctgory" method="POST" action="/app.php?s=/faq/faq/addcategorymodal">-->
                     <form class="form-horizontal" id="addctgory">
-                        <div class="form-group" enctype='multipart/form-data'>
+                        <!-- <div class="form-group" enctype='multipart/form-data'>
                             <label for="ico" class="col-sm-2 control-label">图标</label>
                             <div class="col-sm-9">
                                 <div class="fileinput fileinput-new" data-provides="fileinput" id="exampleInputUpload">
                                     <div class="fileinput-new thumbnail fileinput-exists" style="width: 200px;height: auto;max-height:150px;">
-                                        <!-- <img id='picImg' style="width: 100%;height: auto;max-height: 140px;" src="images/noimage.png" alt="" /> -->
+                                        <img id='picImg' style="width: 100%;height: auto;max-height: 140px;" src="images/noimage.png" alt="" />
                                     </div>
                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"></div>
                                     <div>
@@ -115,64 +118,34 @@
                                     </div>
                                 </div>
                             </div>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">产品线名</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="addLine">
+                                    @foreach ($lines as $line) 
+                                    <option value="{{ $line->id }}">{{ $line->product_line_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="name" class="col-sm-2 control-label">名称</label>
+                            <label for="name" class="col-sm-2 control-label">分类名称</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="name" placeholder="名称">
+                                <input type="text" class="form-control"  placeholder="请输入" id="addName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">分类排序</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control"  placeholder="请输入" id="addSequence">
                             </div>
                         </div>
                     </form>
                     </div>
                     <div class="modal-footer">
-                        <div type="button" class="btn btn-primary" id="uploadSubmit" onclick="addcategoryform()">保存</div>
-                        <!--<div onclick="addcategoryform()">保存</div>-->
+                        <div type="button" class="btn btn-primary" id="uploadSubmit" onclick="addCategory()">保存</div>
                         <div type="button" class="btn btn-default" data-dismiss="modal">取消</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 查看分类modal层 -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="seeRank">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">查看分类</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form class="form-horizontal">
-                            <div class="form-group" enctype='multipart/form-data'>
-                                <label for="ico" class="col-sm-2 control-label">图标</label>
-                                <div class="col-sm-9">
-                                    <div class="fileinput fileinput-new" data-provides="fileinput" id="exampleInputUpload">
-                                        <div class="fileinput-new thumbnail fileinput-exists" style="width: 200px;height: auto;max-height:150px;">
-                                            <!-- <img id='picImg' style="width: 100%;height: auto;max-height: 140px;" src="images/noimage.png" alt="" /> -->
-                                        </div>
-                                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"></div>
-                                        <div>
-                                            <span class="btn btn-primary btn-file">
-                                            <span class="fileinput-new">选择图片</span>
-                                            <span class="fileinput-exists">换一张</span>
-                                            <input type="file" name="pic1" id="picID" accept="image/gif,image/jpeg,image/x-png" />
-                                            </span>
-                                            <a href="javascript:;" class="btn btn-warning fileinput-exists" data-dismiss="fileinput">移除</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="name" class="col-sm-2 control-label">名称</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" id="name" placeholder="名称" disabled>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="uploadSubmit">保存</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                     </div>
                 </div>
             </div>
@@ -188,29 +161,26 @@
                     </div>
                     <div class="modal-body">
                         <form class="form-horizontal">
-                            <div class="form-group" enctype='multipart/form-data'>
-                                <label for="ico" class="col-sm-2 control-label">图标</label>
+                            <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">产品线名</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="editLine">
+                                    @foreach ($lines as $line) 
+                                    <option value="{{ $line->id }}">{{ $line->product_line_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">分类名称</label>
                                 <div class="col-sm-9">
-                                    <div class="fileinput fileinput-new" data-provides="fileinput" id="exampleInputUpload">
-                                        <div class="fileinput-new thumbnail fileinput-exists" style="width: 200px;height: auto;max-height:150px;">
-                                            <!-- <img id='picImg' style="width: 100%;height: auto;max-height: 140px;" src="images/noimage.png" alt="" /> -->
-                                        </div>
-                                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"></div>
-                                        <div>
-                                            <span class="btn btn-primary btn-file">
-                                            <span class="fileinput-new">选择图片</span>
-                                            <span class="fileinput-exists">换一张</span>
-                                            <input type="file" name="pic1" id="picID" accept="image/gif,image/jpeg,image/x-png" />
-                                            </span>
-                                            <a href="javascript:;" class="btn btn-warning fileinput-exists" data-dismiss="fileinput">移除</a>
-                                        </div>
-                                    </div>
+                                    <input type="text" class="form-control"  placeholder="请输入" id="editName">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="name" class="col-sm-2 control-label">名称</label>
+                                <label for="name" class="col-sm-2 control-label">分类排序</label>
                                 <div class="col-sm-9">
-                                    <input type="password" class="form-control" id="name" placeholder="名称">
+                                    <input type="text" class="form-control"  placeholder="请输入" id="editSequence">
                                 </div>
                             </div>
                         </form>
@@ -246,141 +216,175 @@
 
 </body>
 <script type="text/javascript">
-    $(function() {
-        var productLine = -1
-        var lastPage = {{ $last_page }}
-        var options = {}
+    var productLine = -1
+    var lastPage = {{ $last_page }}
+    var options = {}
 
-        // 分页初始化显示全部列表
-        pageInit(lastPage)
+    // 分页初始化显示全部列表
+    pageInit(lastPage)
 
-        $("#search").click(function(){
-            product_line = $("#line").val();
-        })
-        // 初始化分页
-        function pageInit(last_page) {
-            // 分页参数 
-            options = {
-                currentPage: 1,
-                totalPages: last_page,
-                onPageClicked: function (event,originalEvent,type,page) {
-                    getCategoryList(page)
-                }
-            }
-            if(lastPage > 1){
-                $('#Pages').bootstrapPaginator(options);
-             } else {
-                $('#page').empty();
-             }
-        }
-
-        // 获取分类列表
-        function getCategoryList(current_page){
-            if(!current_page){
-                current_page = 1
-            } 
-            $.ajax({
-                url: '/faq/api/category',
-                type: 'get',
-                data: {
-                    product_line: productLine,
-                    current_page: current_page
-                },
-                success: function(d) {
-                    if(d.code == 0){
-                        var list = d.data
-                        var categoryHtml = ''
-                        for (var i = list.length - 1; i >= 0; i--) {
-                            categoryHtml +=  '<tr>'
-                                                + '<td>' + list[i].faq_category_name + '</td>'
-                                                + '<td>' + list[i].update_time + '</td>'
-                                                + '<td>' + list[i].create_time + '</td>'
-                                                + '<td class="text-center collapsing">'
-                                                +    '<a href="javascript:void(0);" onclick="updateCategory(' + list[i].id + ')">编辑</a>'
-                                                +    '<a href="javascript:void(0);" onclick="delCategory(' + list[i].id + ')">删除</a>'
-                                                + '</td>'
-                                            + '</tr>'
-                        }
-                        $("#categorySection").html(categoryHtml)
-                        if(productLine != -1) {
-                            pageInit(d.total/10)
-                        }
-                    }
-                },
-                error: function(err) {
-                    alert("接口请求失败");
-                }
-            });
-           
-        }
-
-        // add category in rank_list
-        function addCategory() {
-            // var _data = $("#addctgory").serialize();why can't get data of form
-            var _pic = $('#picID').val();
-            var _name = $('#name').val();
-            var _option = $('#myRole').val();
-
-            if (!$('#picID').val) {
-                alert('上传图片不能为空');
-                return false;
-            }
-
-            if (!$('#name').val()) {
-                alert('分类名称不能为空!');
-                return false;
-            }
-            if (!$('#myRole').val()) {
-                alert("权限不能为空!");
-                return false;
-            }
-            $.ajax({
-                url: '/app.php?s=/faq/faq/addcategorymodal',
-                type: 'post',
-                dataType: 'json',
-                data: {
-                    // picture: _pic,
-                    name: _name,
-                    option: _option
-                },
-                success: function(_d) {
-                    console.log(_d);
-                    // if (_d && _d.rcode) {
-                    //     alert("分类添加成功");
-                    //     window.location.reload();
-                    // } else {
-                    //     alert('分类添加失败');
-                    // }
-                },
-                error: function(err) {
-                    alert("接口请求失败");
-                }
-            });
-        }
-
-        function updateCategory(id) {
-            var product_line = $("#line").val()
-
-            $.ajax({
-                url: '/faq/api/category',
-                type: 'get',
-                dataType: 'json',
-                data: {
-                    product_line: product_line,
-                },
-                success: function(d) {
-                    console.log(d);
-                },
-                error: function(err) {
-                    alert("接口请求失败");
-                }
-            });
-        }
-
-        function delCategory(id) {
-
-        }
+    $("#search").click(function(){
+        productLine = $("#line").val();
+        getCategoryList()
     })
+    // 初始化分页
+    function pageInit(last_page) {
+        console.log('初始化分页！')
+        // 分页参数 
+        options = {
+            currentPage: 1,
+            totalPages: last_page,
+            onPageClicked: function (event,originalEvent,type,page) {
+                getCategoryList(page)
+            }
+        }
+        if(lastPage > 1){
+            $('#Pages').bootstrapPaginator(options);
+            } else {
+            $('#page').empty();
+            }
+    }
+
+    // 获取分类列表
+    function getCategoryList(current_page){
+        current_page = current_page ? current_page : 1
+        $.ajax({
+            url: '/api/faq/category',
+            type: 'get',
+            data: {
+                product_line: productLine,
+                current_page: current_page
+            },
+            success: function(d) {
+                if(d.code == 0){
+                    var list = d.data
+                    var categoryHtml = ''
+                    for (var i = list.length - 1; i >= 0; i--) {
+                        categoryHtml +=  '<tr>'
+                                            + '<td>' + list[i].faq_category_name + '</td>'
+                                            + '<td>' + list[i].update_time + '</td>'
+                                            + '<td>' + list[i].create_time + '</td>'
+                                            + '<td class="text-center collapsing">'
+                                            +    '<a href="javascript:void(0);" onclick="viewCategory(' + list[i].id + ')">编辑</a>'
+                                            +    '<a href="javascript:void(0);" onclick="delCategory(' + list[i].id + ')">删除</a>'
+                                            + '</td>'
+                                        + '</tr>'
+                    }
+                    $("#categorySection").html(categoryHtml)
+                    if(productLine != -1) {
+                        pageInit(Math.ceil(d.total/10))
+                    }
+                }
+            },
+            error: function(err) {
+                alert("接口请求失败");
+            }
+        });
+        
+    }
+
+    // add category in rank_list
+    function addCategory() {
+        var sequence = $('#addSequence').val();
+        var name = $('#addName').val();
+        var line = $('#addLine').val();
+
+        if (!name) {
+            alert('分类名称不能为空!');
+            return false;
+        }
+
+        $.ajax({
+            url: '/api/faq/category',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                faq_category_name: name,
+                sequence: sequence,
+                product_line: line
+            },
+            success: function(d) {
+                if (d.code == 0){
+                    $("#addRank").hide()
+                    alert("添加分类成功！")
+                } else {
+                    alert("添加分类失败！")
+                }
+            },
+            error: function(err) {
+                alert("接口请求失败");
+            }
+        });
+    }
+
+    // 查看分类
+    function viewCategory(id) {
+        $("#editRank").show()
+         $.ajax({
+            url: '/api/faq/category_view',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                category_id: id,
+            },
+            success: function(d) {
+                if(d.code == 0){
+                    $('#editSequence').val(d.data.sequence);
+                    $('#editName').val(d.data.faq_category_name);
+                    $('#editLine').val(d.data.product_line);
+
+                }
+                $("#editRank").hide()
+            },
+            error: function(err) {
+                alert("接口请求失败");
+            }
+        });
+    }
+
+    function updateCategory(id) {
+        var sequence = $('#editSequence').val();
+        var name = $('#editName').val();
+        var line = $('#editLine').val();
+
+        $.ajax({
+            url: '/api/faq/category_update',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                category_id: id,
+                product_line: line,
+                faq_category_name: name,
+                sequence: sequence
+            },
+            success: function(d) {
+                if(d.code == 0){
+                    alert("更新成功！")
+                }
+            },
+            error: function(err) {
+                alert("接口请求失败");
+            }
+        });
+    }
+
+    function delCategory(id) {
+        $.ajax({
+            url: '/api/faq/category_delete',
+            type: 'post',
+            data: {
+                category_id: id,
+            },
+            success: function(d) {
+                if(d.code == 0){
+                    alert("删除成功！")
+                }
+            },
+            error: function(err) {
+                alert("接口请求失败");
+            }
+        });
+    }
 </script>
 
 </html>

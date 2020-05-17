@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -96,7 +98,7 @@ Route::get('/home/test/test11', 'TestController@test11');
 Route::get('/home/test/test12', 'TestController@test12');
 
 // 自动验证, any自己提交给自己
-Route::any('/home/test/test13', 'TestController@test13');
+Route::post('/home/test/test13', 'TestController@test13');
 
 // 文件上传
 Route::any('/home/test/test14', 'TestController@test14');
@@ -132,14 +134,6 @@ Route::get('/faq/home', 'Faq\IndexController@index');
 Route::get('/faq/home/detail', 'Faq\IndexController@detail');
 // 联系我们
 Route::get('/faq/index/attention_us', 'Faq\IndexController@attention');
-
-// 相关api文件
-// 问题是否已解决
-Route::post('/faq/api/solve', 'Faq\ApiController@solve');
-Route::post('/faq/api/search', 'Faq\ApiController@search');
-
-Route::get('/faq/api/category', 'FaqAdmin\ApiController@categoryList');
-Route::get('/faq/api/question', 'FaqAdmin\ApiController@questionList');
 
 // ------------------------- end faq -------------------
 
