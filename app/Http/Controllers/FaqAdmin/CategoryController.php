@@ -81,6 +81,7 @@ class CategoryController extends Controller
 		$reqData = $this->request->validate([
             'faq_category_name'    => 'required',
 			'product_line' => 'required',
+			'sequence' => 'nullable'
 		]);
 		// 新建分类
 		$category = Category::create([
@@ -108,6 +109,9 @@ class CategoryController extends Controller
 	public function show($id)
 	{
 		$category = Category::findOrFail($id);
+		$db = DB::table('faq_productline_to_category');
+		$productToCategory = $db -> where('category_id', Arr::get($category, 'id')) -> first();
+		$category['product_line'] = $productToCategory -> product_line_id;
 		$res = [
             "code" => 0,
             "msg"  => "成功",
@@ -117,15 +121,24 @@ class CategoryController extends Controller
 	}
 
 	// 编辑分类
-	public function update()
+	public function update($id)
 	{
 		// 获取所有参数
 		$reqData = $this->request->validate([
-            'category_id'    => 'required|integer',
-        ]);
-		$category = Category::findOrFail(Arr::get($reqData, 'category_id'));
+            'faq_category_name'    => 'required',
+			'product_line' => 'required',
+			'sequence' => 'nullable'
+		]);
+
+		// 更新关系表
+		$db = DB::table('faq_productline_to_category');
+		$db -> where('category_id', $id) -> update([
+    		'product_line_id' => Arr::get($reqData, 'product_line'),
+    	]);
+
+		$category = Category::findOrFail($id);
 		foreach($reqData  as $k => $v) {
-			if($k != "category_id"){
+			if($k != 'product_line') {
 				$category[$k] = $v;
 			}
 		}
@@ -141,38 +154,14 @@ class CategoryController extends Controller
 	}
 
 	// 删除分类
-	public function destroy()
-	{
-		// 获取所有参数
-		$reqData = $this->request->validate([
-            'category_id'    => 'required|integer',
-        ]);
-		
-		$category = Category::findOrFail(Arr::get($reqData, 'category_id'));
+	public function destroy($id)
+	{	
+		$category = Category::findOrFail($id);
 		$category -> delete();
 		$res = [
             "code" => 0,
             "msg"  => "删除成功",
             "data" => $category
-        ];
-		return $res;
-	}
-
-	// 问题列表
-	public function questionList()
-	{
-		// 获取所有参数
-        $reqData = $request -> all();
-        $line = $reqData["product_line"];
-        $category = $reqData["faq_category_id"];
-
-        // 获取全部问题
-        $questions = Question::offset(10)->get();
-
-	 	$res = [
-            "code" => 0,
-            "msg"  => "成功",
-            "data" => $questions
         ];
 		return $res;
 	}

@@ -31,7 +31,7 @@ class QuestionController extends Controller
     }
 
 	// 问题列表
-	public function index(Request $request)
+	public function index()
 	{
 		// 获取所有参数
         $reqData = $this->request->validate([
@@ -48,9 +48,14 @@ class QuestionController extends Controller
 
         // 判断是否返回全部问题  -1为全部
 		if($line == -1){
-			$categories = Category::paginate($perPage, $columns, $pageName, $currentPage) -> toArray();
+			$categories = Category::paginate($perPage, $columns, $pageName, $currentPage) 
+				-> toArray();
 		} else {
-			$categories = Productline::find($line) -> category() -> paginate($perPage, $columns, $pageName, $currentPage) -> toArray();
+			$categories = Productline::find($line) 
+				-> category() 
+				-> paginate($perPage, $columns, $pageName, $currentPage) 
+				-> orderBy('sequence') 
+				-> toArray();
 		}
 		$total = $categories['total'];
 		// 判断是否超出页数，超出则返回空数组	
@@ -71,17 +76,17 @@ class QuestionController extends Controller
 	}
 
 	// 创建一个问题
-	public function create(Request $request)
+	public function store()
 	{
 		$reqData = $this->request->validate([
-            'faq_category_name'    => 'require',
-			'sequence' => 'nullable|integer',
-			'product_line' => 'require',
-        ]);
+            'faq_category_name'    => 'required',
+			'product_line' => 'required',
+			'sequence' => 'nullable'
+		]);
 		// 新建问题
 		$category = Category::create([
             'faq_category_name' => Arr::get($reqData, 'faq_category_name'),
-            'sequence'          => Arr::get($reqData, 'sequence'),
+            'sequence'          => Arr::get($reqData, 'sequence', 100),
 		])->toArray();
 
 		// 新增关系表
@@ -101,13 +106,12 @@ class QuestionController extends Controller
 	}
 
 	// 查看问题
-	public function edit(Request $request)
+	public function show($id)
 	{
-		$reqData = $this->request->validate([
-            'category_id'    => 'require|integer',
-        ]);
-		
-		$category = Category::findOrFail(Arr::get($reqData, 'category_id'));
+		$category = Category::findOrFail($id);
+		$db = DB::table('faq_productline_to_category');
+		$productToCategory = $db -> where('category_id', Arr::get($category, 'id')) -> first();
+		$category['product_line'] = $productToCategory -> product_line_id;
 		$res = [
             "code" => 0,
             "msg"  => "成功",
@@ -117,15 +121,24 @@ class QuestionController extends Controller
 	}
 
 	// 编辑问题
-	public function update(Request $request)
+	public function update($id)
 	{
 		// 获取所有参数
 		$reqData = $this->request->validate([
-            'category_id'    => 'require|integer',
-        ]);
-		$category = Category::findOrFail(Arr::get($reqData, 'category_id'));
+            'faq_category_name'    => 'required',
+			'product_line' => 'required',
+			'sequence' => 'nullable'
+		]);
+
+		// 更新关系表
+		$db = DB::table('faq_productline_to_category');
+		$db -> where('category_id', $id) -> update([
+    		'product_line_id' => Arr::get($reqData, 'product_line'),
+    	]);
+
+		$category = Category::findOrFail($id);
 		foreach($reqData  as $k => $v) {
-			if($k != "category_id"){
+			if($k != 'product_line') {
 				$category[$k] = $v;
 			}
 		}
@@ -141,38 +154,14 @@ class QuestionController extends Controller
 	}
 
 	// 删除问题
-	public function destroy(Request $request)
-	{
-		// 获取所有参数
-		$reqData = $this->request->validate([
-            'category_id'    => 'require|integer',
-        ]);
-		
-		$category = Category::findOrFail(Arr::get($reqData, 'category_id'));
+	public function destroy($id)
+	{	
+		$category = Category::findOrFail($id);
 		$category -> delete();
 		$res = [
             "code" => 0,
             "msg"  => "删除成功",
             "data" => $category
-        ];
-		return $res;
-	}
-
-	// 问题列表
-	public function questionList(Request $request)
-	{
-		// 获取所有参数
-        $reqData = $request -> all();
-        $line = $reqData["product_line"];
-        $category = $reqData["faq_category_id"];
-
-        // 获取全部问题
-        $questions = Question::offset(10)->get();
-
-	 	$res = [
-            "code" => 0,
-            "msg"  => "成功",
-            "data" => $questions
         ];
 		return $res;
 	}

@@ -186,7 +186,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="uploadSubmit">保存</button>
+                        <button type="button" class="btn btn-primary" id="uploadSubmit" onclick="updateCategory()">保存</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                     </div>
                 </div>
@@ -219,6 +219,8 @@
     var productLine = -1
     var lastPage = {{ $last_page }}
     var options = {}
+    var categoryId = 0
+    var currentPage = 1
 
     // 分页初始化显示全部列表
     pageInit(lastPage)
@@ -235,7 +237,9 @@
             currentPage: 1,
             totalPages: last_page,
             onPageClicked: function (event,originalEvent,type,page) {
-                getCategoryList(page)
+                console.log(page)
+                currentPage = page
+                getCategoryList()
             }
         }
         if(lastPage > 1){
@@ -246,14 +250,13 @@
     }
 
     // 获取分类列表
-    function getCategoryList(current_page){
-        current_page = current_page ? current_page : 1
+    function getCategoryList(){
         $.ajax({
             url: '/api/faq/categories',
             type: 'get',
             data: {
                 product_line: productLine,
-                current_page: current_page
+                current_page: currentPage
             },
             success: function(d) {
                 if(d.code == 0){
@@ -304,8 +307,12 @@
             },
             success: function(d) {
                 if (d.code == 0){
-                    $("#addRank").hide()
                     alert("添加分类成功！")
+                    $("#addRank").modal('hide')
+
+                    $('#Pages').bootstrapPaginator("showFirst")
+                    currentPage = 1
+                    getCategoryList()
                 } else {
                     alert("添加分类失败！")
                 }
@@ -318,7 +325,6 @@
 
     // 查看分类
     function viewCategory(id) {
-        $("#editRank").modal('show')
          $.ajax({
             url: '/api/faq/categories/' + id,
             type: 'get',
@@ -327,9 +333,9 @@
                     $('#editSequence').val(d.data.sequence);
                     $('#editName').val(d.data.faq_category_name);
                     $('#editLine').val(d.data.product_line);
-
+                    categoryId = d.data.id
                 }
-                $("#editRank").hide()
+                $("#editRank").modal('show')
             },
             error: function(err) {
                 alert("接口请求失败");
@@ -337,16 +343,15 @@
         });
     }
 
-    function updateCategory(id) {
+    function updateCategory() {
         var sequence = $('#editSequence').val();
         var name = $('#editName').val();
         var line = $('#editLine').val();
 
         $.ajax({
-            url: '/api/faq/categories/'+id,
+            url: '/api/faq/categories/'+categoryId,
             type: 'PATCH',
             data: {
-                category_id: id,
                 product_line: line,
                 faq_category_name: name,
                 sequence: sequence
@@ -354,7 +359,10 @@
             success: function(d) {
                 if(d.code == 0){
                     alert("更新成功！")
+                    $('#Pages').bootstrapPaginator("showFirst")
+                    getCategoryList()
                 }
+                $("#editRank").modal('hide')
             },
             error: function(err) {
                 alert("接口请求失败");
@@ -367,19 +375,25 @@
     }
 
     function delCategory(id) {
-        $.ajax({
-            url: '/api/faq/categories/' + id,
-            type: 'DELETE',
-            success: function(d) {
-                if(d.code == 0){
-                    alert("删除成功！")
-                    getCategoryList()
+        var r=confirm("是否确认删除？")
+        if (r){
+           $.ajax({
+                url: '/api/faq/categories/' + id,
+                type: 'DELETE',
+                success: function(d) {
+                    if(d.code == 0){
+                        alert('删除成功！')
+                        $('#Pages').bootstrapPaginator("showFirst")
+                        getCategoryList()
+                    } else {
+                        alert('删除失败！')
+                    }
+                },
+                error: function(err) {
+                    alert("接口请求失败");
                 }
-            },
-            error: function(err) {
-                alert("接口请求失败");
-            }
-        });
+            });
+        }
     }
 </script>
 
