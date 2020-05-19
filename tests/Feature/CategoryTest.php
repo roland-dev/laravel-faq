@@ -13,9 +13,12 @@ class CategoryTest extends TestCase
      *
      * @return void
      */
-    public function testExample()
+    public function category()
     {
-        $response = $this->get('/');
+        $response = $this->get('/api/faq/questions', [
+            'category_id' => -1, 
+            'current_page' => 1
+        ]);
 
         $response->assertStatus(200);
     }

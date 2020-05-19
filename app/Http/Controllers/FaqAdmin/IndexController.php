@@ -16,8 +16,10 @@ class IndexController extends Controller
 	{	
 		// 获取所有分类
 		$categories = Category::all();
+		$questions = Question::all();
+		$lines = Productline::all();
 
-		return view('faqadmin.index');
+		return view('faqadmin.index', compact('categories', 'questions', 'lines'));
 	}
 
 	/** 分类列表*/

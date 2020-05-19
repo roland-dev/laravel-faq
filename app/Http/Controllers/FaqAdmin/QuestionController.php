@@ -8,7 +8,6 @@ use Arr;
 use DB;
 use App\Models\Category;
 use App\Models\Question;
-use App\Models\ProductLine;
 
 class QuestionController extends Controller
 {
@@ -35,10 +34,10 @@ class QuestionController extends Controller
 	{
 		// 获取所有参数
         $reqData = $this->request->validate([
-            'product_line'    => 'nullable|integer',
+            'category_id'    => 'nullable|integer',
             'current_page' => 'nullable|integer',
         ]);
-        $line = Arr::get($reqData, "product_line");
+        $id = Arr::get($reqData, "category_id");
         $currentPage = Arr::get($reqData, "current_page");
 
         $perPage = 10;             // 分页
@@ -47,22 +46,20 @@ class QuestionController extends Controller
 		$total = 0;                // 总数
 
         // 判断是否返回全部问题  -1为全部
-		if($line == -1){
-			$categories = Category::paginate($perPage, $columns, $pageName, $currentPage) 
+		if($id == -1){
+			$questions = Question::paginate($perPage, $columns, $pageName, $currentPage) 
 				-> toArray();
 		} else {
-			$categories = Productline::find($line) 
-				-> category() 
+			$questions = Question::where('faq_category_id', $id) 
 				-> paginate($perPage, $columns, $pageName, $currentPage) 
-				-> orderBy('sequence') 
 				-> toArray();
 		}
-		$total = $categories['total'];
+		$total = $questions['total'];
 		// 判断是否超出页数，超出则返回空数组	
-		if($currentPage > $categories['last_page']) {
-			$categories = [];
+		if($currentPage > $questions['last_page']) {
+			$questions = [];
 		} else {
-			$categories = $categories['data'];			
+			$questions = $questions['data'];			
 		}
 
 		// 返回值
@@ -70,7 +67,7 @@ class QuestionController extends Controller
             "code" 	=> 0,
             "total"	=> $total,
             "msg"  	=> "成功",
-            "data" 	=> $categories
+            "data" 	=> $questions
         ];
 		return $res;
 	}

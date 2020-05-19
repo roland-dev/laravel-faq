@@ -16,7 +16,6 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <!-- <h3 class="navbar-brand">FAQ后台管理</h3> -->
                 <a class="navbar-brand" href="#"><b>常见问题后台管理</b></a>
             </div>
         </div>
@@ -39,15 +38,9 @@
                             <label for="classify">分类</label>
                             <select class="form-control" id="classify">
                             <option value="-1">全部</option>
-                            <?php
-                                if(!empty($category)){
-                                    foreach($category as $key => $val){
-                            ?>
-                            <option value="<?php echo $val['faq_category_id']?>"><?php echo $val['faq_category_name']?></option>
-                            <?php
-                                    }
-                                }
-                            ?>
+                            @foreach ($categories as $category)
+                            <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
+                            @endforeach
                         </select>
                         </div>
                         <div class="form-group col-sm-4 col-md-4">
@@ -63,7 +56,7 @@
                     <div class="row">
                         <p>
                             <div>
-                                <div type="button" class="btn btn-primary search" onclick="postindex()">查询</div>
+                                <div type="button" class="btn btn-primary search" onclick="search()">查询</div>
                             </div>
                         </p>
                     </div>
@@ -83,38 +76,33 @@
                             </tr>
                         </thead>
                         <tbody id="tbody">
-                            <?php
-                               if(!empty($questions)){
-                                    foreach($questions as $key => $val){
-                            ?>
-                                <input type="hidden" id="faq_question_id" value="<?php echo $val['faq_question_id']?>">
+                            @foreach($questions as $question)
+                                <input type="hidden" id="faq_question_id" value="{{ $question -> faq_question_id }}">
                                 <tr>
                                     <td>
-                                        <?php echo $val['questions']?>
+                                        {{ $question->questions }}
                                     </td>
                                     <td>
-                                        <?php echo $val['faq_category_name']?>
+                                        {{ $question->faq_category_name }}
                                     </td>
                                     <td>
-                                        <?php echo $val['isdisplay']?>
+                                        {{ $question->isdisplay }}
                                     </td>
                                     <td>
-                                        <?php echo $val['viewtimes']?>
+                                        {{ $question->viewtimes }}
                                     </td>
                                     <td>
-                                        <?php echo $val['resolvetimes']?>
+                                        {{ $question->resolvetimes }}
                                     </td>
                                     <td>
-                                        <?php echo $val['unresolvetimes']?>
+                                        {{ $question->unresolvetimes }}
                                     </td>
-                                    <td class="text-center collapsing"><a href="javascript:void(0);" class="edit" value="<?php echo $val['faq_question_id']?>">编辑</a>
-                                        <a href="javascript:void(0);" class="del" value="<?php echo $val['faq_question_id']?>">删除</a></td>
+                                    <td class="text-center collapsing">
+                                        <a href="javascript:void(0);" class="edit" value="{{ $question -> faq_question_id }}">编辑</a>
+                                        <a href="javascript:void(0);" class="del" value="{{ $question -> faq_question_id }}">删除</a>
+                                    </td>
                                 </tr>
-
-                                <?php         
-                                    }
-                               }
-                            ?>
+                            @endforeach
                         </tbody>
                     </table>
                     <nav aria-label="Page navigation clearfix">
@@ -152,17 +140,11 @@
 						<div class="form-group">
                             <label for="productLineId" class="col-sm-2 control-label" style='margin-right:18px'>产品线</label>
 							<div class="checkbox">
-                                <?php
-                                    if(!empty($productLineList)){
-                                        foreach($productLineList as $val){
-                                ?>
+                                @foreach($lines as $line)
 						        	<label>
-						            	<input type="checkbox" name="additem" id="<?php echo $val['id'] ?>" value="<?php echo $val['id'] ?>"  checked = "checked" ><?php echo $val['product_line_name'] ?>
+						            	<input type="checkbox" name="additem" id="{{ $line->id }}" value="{{ $line->id }}"  checked = "checked" >{{ $line->product_line_name }}
 						     	    </label>
-                                <?php
-                                        }
-                                    }
-                                ?>
+                                @endforeach
 							</div>
                         </div>
                         <div class="form-group">
@@ -170,15 +152,9 @@
                             <div class="col-sm-9">
                                 <select class="form-control" id="myRole">
                                 <option value="-1">选择分类</option>
-                                <?php
-                                    if(!empty($category)){
-                                        foreach($category as $key => $val){
-                                ?>
-                                <option value="<?php echo $val['faq_category_id']?>"><?php echo $val['faq_category_name']?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
+                                @endforeach
                                 </select>
                             </div>
                         </div>
@@ -217,7 +193,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <div type="button" class="btn btn-primary" id="uploadSubmit" onclick="addquestions()">保存</div>
+                    <div type="button" class="btn btn-primary" id="uploadSubmit" onclick="addQuestion()">保存</div>
                     <div type="button" class="btn btn-default" data-dismiss="modal">取消</div>
                 </div>
             </div>
@@ -251,17 +227,11 @@
 						<div class="form-group">
                             <label for=" " class="col-sm-2 control-label" style="margin-right:18px">产品线</label>
 							<div class="checkbox">
-                                <?php
-                                    if(!empty($productLineList)){
-                                        foreach($productLineList as $val){
-                                ?>
-						        	<label>
-						            	<input type="checkbox" name="edit" id="<?php echo $val['id'] ?>" value="<?php echo $val['id'] ?>" ><?php echo $val['product_line_name'] ?>
-						     	    </label>
-                                <?php
-                                        }
-                                    }
-                                ?>
+                                @foreach($lines as $line)
+                                    <label>
+                                        <input type="checkbox" name="additem" id="{{ $line->id }}" value="{{ $line->id }}"  checked = "checked" >{{ $line->product_line_name }}
+                                    </label>
+                                @endforeach
 							</div>
                         </div>
 
@@ -269,16 +239,10 @@
                             <label for="editmyRole" class="col-sm-2 control-label">分类</label>
                             <div class="col-sm-9">
                                 <select class="form-control" id="editmyRole">
-                                <option value="-1">选择分类</option>
-                                <?php
-                                    if(!empty($category)){
-                                        foreach($category as $key => $val){
-                                ?>
-                                <option value="<?php echo $val['faq_category_id']?>"><?php echo $val['faq_category_name']?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
+                                    <option value="-1">选择分类</option>
+                                    @foreach($categories as $category)
+                                    <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -286,18 +250,9 @@
                             <label for="editrole" class="col-sm-2 control-label">权限</label>
                             <div class="col-sm-9">
                                 <select class="form-control" id="editrole">
-                                <option value="-1">选择权限</option>
-                                <option value="0">公开</option>
-                                <option value="1">仅员工可见</option>
-                                <!--<?php
-                                    if(!empty($right)){
-                                        foreach($right as $key => $val){
-                                ?>
-                                <option value="<?php echo $val['departmentright_id']?>"><?php echo $val['right_name']?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>-->
+                                    <option value="-1">选择权限</option>
+                                    <option value="0">公开</option>
+                                    <option value="1">仅员工可见</option>
                                 </select>
                             </div>
                         </div>
@@ -326,7 +281,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="uploadSubmit" onclick="editquestions()">保存</button>
+                    <button type="button" class="btn btn-primary" id="uploadSubmit" onclick="editQuestion()">保存</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>
@@ -347,7 +302,7 @@
                 <div class="modal-footer">
                     <input type="hidden" id="url" />
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <a class="btn btn-primary" data-dismiss="modal" onclick="delquestion()">确定</a>
+                    <a class="btn btn-primary" data-dismiss="modal" onclick="delQuestion()">确定</a>
                 </div>
             </div>
         </div>
@@ -445,31 +400,31 @@
                         category: _classify,
                         searchmun: _searchnum
                     },
-                    success: function(_d) {
-                        if (_d) {
+                    success: function(d) {
+                        if (d) {
                             $("#tbody").empty();
-                            for (var i = 0; i < _d.data.length; i++) {
+                            for (var i = 0; i < d.data.length; i++) {
                                 var html = '<tr>' +
-                                    '<td>' + _d.data[i].questions +
+                                    '<td>' + d.data[i].questions +
                                     '</td>' +
                                     '<td>' +
-                                    _d.data[i].faq_category_name +
+                                    d.data[i].faq_category_name +
                                     '</td>' +
                                     '<td>' +
-                                    _d.data[i].isdisplay +
+                                    d.data[i].isdisplay +
                                     '</td>' +
                                     '<td>' +
-                                    _d.data[i].viewtimes +
+                                    d.data[i].viewtimes +
                                     '</td>' +
                                     '<td>' +
-                                    _d.data[i].resolvetimes +
+                                    d.data[i].resolvetimes +
                                     '</td>' +
                                     '<td>' +
-                                    _d.data[i].unresolvetimes +
+                                    d.data[i].unresolvetimes +
                                     '</td>' +
                                     '<td class = "text-center collapsing" >' +
-                                    '<a href = "javascript:void(0);" class="edit" value= "' + _d.data[i].faq_question_id + '" onclick="editques(' + _d.data[i].faq_question_id + ')"> 编辑 </a>' +
-                                    '<a href = "javascript:void(0);" class="del" value= "' + _d.data[i].faq_question_id + '" onclick="delques(' + _d.data[i].faq_question_id + ')"> 删除 </a>' +
+                                    '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].faq_question_id + '" onclick="editques(' + d.data[i].faq_question_id + ')"> 编辑 </a>' +
+                                    '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].faq_question_id + '" onclick="delques(' + d.data[i].faq_question_id + ')"> 删除 </a>' +
                                     '</td>' +
                                     '</tr>';
                                 $("#tbody").append(html);
@@ -506,7 +461,7 @@
         $("#delcfmModal").modal("show")
     }
 
-    function postindex() {
+    function search() {
         var _classify = $('#classify').val();
         var _searchnum = $('#searchnum').val();
         $.ajax({
@@ -518,37 +473,37 @@
                 category: _classify,
                 searchmun: _searchnum
             },
-            success: function(_d) {
-                if (_d) {
+            success: function(d) {
+                if (d) {
                     $("#tbody").empty();
-                    for (var i = 0; i < _d.data.length; i++) {
+                    for (var i = 0; i < d.data.length; i++) {
                         var html = '<tr>' +
-                            '<td>' + _d.data[i].questions +
+                            '<td>' + d.data[i].questions +
                             '</td>' +
                             '<td>' +
-                            _d.data[i].faq_category_name +
+                            d.data[i].faq_category_name +
                             '</td>' +
                             '<td>' +
-                            _d.data[i].isdisplay +
+                            d.data[i].isdisplay +
                             '</td>' +
                             '<td>' +
-                            _d.data[i].viewtimes +
+                            d.data[i].viewtimes +
                             '</td>' +
                             '<td>' +
-                            _d.data[i].resolvetimes +
+                            d.data[i].resolvetimes +
                             '</td>' +
                             '<td>' +
-                            _d.data[i].unresolvetimes +
+                            d.data[i].unresolvetimes +
                             '</td>' +
                             '<td class = "text-center collapsing" >' +
-                            '<a href = "javascript:void(0);" class="edit" value= "' + _d.data[i].faq_question_id + '" onclick="editques(' + _d.data[i].faq_question_id + ')"> 编辑 </a>' +
-                            '<a href = "javascript:void(0);" class="del" value= "' + _d.data[i].faq_question_id + '" onclick="delques(' + _d.data[i].faq_question_id + ')"> 删除 </a>' +
+                            '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].faq_question_id + '" onclick="editques(' + d.data[i].faq_question_id + ')"> 编辑 </a>' +
+                            '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].faq_question_id + '" onclick="delques(' + d.data[i].faq_question_id + ')"> 删除 </a>' +
                             '</td>' +
                             '</tr>';
                         $("#tbody").append(html);
                     };
                     var options = {
-                        totalPages: _d.cnt,
+                        totalPages: d.cnt,
                         onPageClicked: function(event, originalEvent, type, page) {
                             _classify = $('#classify').val();
                             _searchnum = $('#searchnum').val();
@@ -561,31 +516,31 @@
                                     category: _classify,
                                     searchmun: _searchnum
                                 },
-                                success: function(_d) {
-                                    if (_d) {
+                                success: function(d) {
+                                    if (d) {
                                         $("#tbody").empty();
-                                        for (var i = 0; i < _d.data.length; i++) {
+                                        for (var i = 0; i < d.data.length; i++) {
                                             var html = '<tr>' +
-                                                '<td>' + _d.data[i].questions +
+                                                '<td>' + d.data[i].questions +
                                                 '</td>' +
                                                 '<td>' +
-                                                _d.data[i].faq_category_name +
+                                                d.data[i].faq_category_name +
                                                 '</td>' +
                                                 '<td>' +
-                                                _d.data[i].isdisplay +
+                                                d.data[i].isdisplay +
                                                 '</td>' +
                                                 '<td>' +
-                                                _d.data[i].viewtimes +
+                                                d.data[i].viewtimes +
                                                 '</td>' +
                                                 '<td>' +
-                                                _d.data[i].resolvetimes +
+                                                d.data[i].resolvetimes +
                                                 '</td>' +
                                                 '<td>' +
-                                                _d.data[i].unresolvetimes +
+                                                d.data[i].unresolvetimes +
                                                 '</td>' +
                                                 '<td class = "text-center collapsing" >' +
-                                                '<a href = "javascript:void(0);" class="edit" value= "' + _d.data[i].faq_question_id + '" onclick="editques(' + _d.data[i].faq_question_id + ')"> 编辑 </a>' +
-                                                '<a href = "javascript:void(0);" class="del" value= "' + _d.data[i].faq_question_id + '" onclick="delques(' + _d.data[i].faq_question_id + ')"> 删除 </a>' +
+                                                '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].faq_question_id + '" onclick="editques(' + d.data[i].faq_question_id + ')"> 编辑 </a>' +
+                                                '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].faq_question_id + '" onclick="delques(' + d.data[i].faq_question_id + ')"> 删除 </a>' +
                                                 '</td>' +
                                                 '</tr>';
                                             $("#tbody").append(html);
@@ -608,8 +563,8 @@
         });
     }
 
-    function addquestions() {
-        // var _data = $("#addctgory").serialize();
+    function addQuestion() {
+        // var data = $("#addctgory").serialize();
         var _txtquestion = $('#txtquestion').val();
         var _myRole = $('#myRole').val();
         var _role = $('#role').val();
@@ -674,8 +629,8 @@
                 radioistop: _radioistop,
                 checkbox: checkboxVal
             },
-            success: function(_d) {
-                if (_d.rcode) {
+            success: function(d) {
+                if (d.code) {
                     alert("添加成功");
                     window.location.reload();
                 } else {
@@ -696,9 +651,9 @@
             data: {
                 faq_question_id: _val
             },
-            success: function(_d) {
-                if (_d.rcode == 1) {
-                    endow(_d.data);
+            success: function(d) {
+                if (d.code == 1) {
+                    endow(d.data);
                 }
             },
             error: function(err) {
@@ -725,7 +680,7 @@
                 break;
             }
         }
-        if (val.is_display == 1) {
+        if (val.isdisplay == 1) {
             $('#editisShow1').prop('checked', true);
         } else {
             $('#editisShow2').prop('checked', true);
@@ -747,7 +702,7 @@
         }
     }
 
-    function editquestions() {
+    function editQuestion() {
         var _edittxt = $('#edittxt').val();
         var _editmyRole = $('#editmyRole').val();
         var _editrole = $('#editrole').val();
@@ -813,8 +768,8 @@
                 radioistop: _radioeditistop,
                 editCheckBox: editCheckboxVal
             },
-            success: function(_d) {
-                if (_d.rcode) {
+            success: function(d) {
+                if (d.code) {
                     alert("编辑成功");
                     window.location.reload();
                 } else {
@@ -827,7 +782,7 @@
         });
     }
 
-    function delquestion() {
+    function delQuestion() {
         $.ajax({
             url: '/qyapp.php?s=/faq/admin/del',
             type: 'post',
@@ -835,8 +790,8 @@
             data: {
                 faq_question_id: _val
             },
-            success: function(_d) {
-                if (_d.rcode) {
+            success: function(d) {
+                if (d.code) {
                     alert("删除成功");
                     window.location.reload();
                 } else {

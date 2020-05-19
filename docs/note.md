@@ -478,6 +478,9 @@ GET           /users/{user}/edit          edit    users.edit
 PUT|PATCH     /users/{user}               update  users.update
 DELETE        /users/{user}               destroy users.destroy
 
+## 测试
+php artisan test --filter FuncA 
+
 
 
 
