@@ -9,6 +9,7 @@ class Question extends Model
     // 关联数据库，如果数据库是复数形式就不需要写这行也可以
     protected $table = "faq_question";
     public $timestamps = false;
+    protected $fillable = ['questions', 'answers', 'product_line', 'faq_category_id', 'is_user', 'is_display', 'is_top'];
 
     // 搜索问题并进行分页
     public function searchQuestion($conditions, $pageSize = -1) {

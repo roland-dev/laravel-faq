@@ -16,13 +16,13 @@ class CategoryController extends Controller
 	
 	//路由对应方法名:
 	// Verb          Path                             Action  Route Name
-	// GET           /users                           index   categories.index
+	// GET           /categories                      index   categories.index
 	// GET           /categories/create               create  categories.create
 	// POST          /categories                      store   categories.store
-	// GET           /categories/{user}               show    categories.show
-	// GET           /categories/{user}/edit          edit    categories.edit
-	// PUT|PATCH     /categories/{user}               update  categories.update
-	// DELETE        /categories/{user}               destroy categories.destroy
+	// GET           /categories/{id}                 show    categories.show
+	// GET           /categories/{id}/edit            edit    categories.edit
+	// PUT|PATCH     /categories/{id}                 update  categories.update
+	// DELETE        /categories/{id}                 destroy categories.destroy
 	
 	// 构造函数
 	public function __construct (Request $request)

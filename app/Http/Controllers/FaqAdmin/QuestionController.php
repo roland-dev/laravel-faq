@@ -18,10 +18,10 @@ class QuestionController extends Controller
 	// GET           /questions                      index   questions.index
 	// GET           /questions/create               create  questions.create
 	// POST          /questions                      store   questions.store
-	// GET           /questions/{user}               show    questions.show
-	// GET           /questions/{user}/edit          edit    questions.edit
-	// PUT|PATCH     /questions/{user}               update  questions.update
-	// DELETE        /questions/{user}               destroy questions.destroy
+	// GET           /questions/{id}                 show    questions.show
+	// GET           /questions/{id}/edit            edit    questions.edit
+	// PUT|PATCH     /questions/{id}                 update  questions.update
+	// DELETE        /questions/{id}                 destroy questions.destroy
 
 	// 构造函数
 	public function __construct (Request $request)
@@ -34,10 +34,13 @@ class QuestionController extends Controller
 	{
 		// 获取所有参数
         $reqData = $this->request->validate([
-            'category_id'    => 'nullable|integer',
+            'category_id'  => 'nullable|integer',
+            'order_by'      => 'nullable|integer',
             'current_page' => 'nullable|integer',
         ]);
-        $id = Arr::get($reqData, "category_id");
+
+        $categoryId = Arr::get($reqData, "category_id");
+        $orderBy = Arr::get($reqData, "order_by");
         $currentPage = Arr::get($reqData, "current_page");
 
         $perPage = 10;             // 分页
@@ -45,22 +48,41 @@ class QuestionController extends Controller
 		$pageName = 'page';        // 分页参数
 		$total = 0;                // 总数
 
+		// 排序规则 1 浏览次数 2 已解决次数 3 未解决次数
+		if($orderBy == 1){
+			$questions = Question::orderBy('viewtimes', 'desc');
+		} else if($orderBy ==  2){
+			$questions = Question::orderBy('resolvetimes', 'desc');
+		} else if($orderBy == 3){
+			$questions = Question::orderBy('unresolvetimes', 'desc');
+		} else{
+			$questions = Question::orderBy('create_time', 'desc');
+		}
+
         // 判断是否返回全部问题  -1为全部
-		if($id == -1){
-			$questions = Question::paginate($perPage, $columns, $pageName, $currentPage) 
+		if($categoryId == -1){
+			$questions = $questions -> paginate($perPage, $columns, $pageName, $currentPage) 
 				-> toArray();
 		} else {
-			$questions = Question::where('faq_category_id', $id) 
+			$questions = $questions -> where('faq_category_id', $categoryId) 
 				-> paginate($perPage, $columns, $pageName, $currentPage) 
 				-> toArray();
 		}
+	 	
 		$total = $questions['total'];
+		
 		// 判断是否超出页数，超出则返回空数组	
 		if($currentPage > $questions['last_page']) {
 			$questions = [];
 		} else {
 			$questions = $questions['data'];			
 		}
+		
+		$categories = Category::all() -> toArray();
+		$categoryList = array_column($categories, 'faq_category_name', 'id');
+		foreach ($questions as &$question) {
+            $question['faq_category_name'] = $categoryList[$question['faq_category_id']];
+        }
 
 		// 返回值
 	 	$res = [
@@ -76,28 +98,29 @@ class QuestionController extends Controller
 	public function store()
 	{
 		$reqData = $this->request->validate([
-            'faq_category_name'    => 'required',
-			'product_line' => 'required',
-			'sequence' => 'nullable'
+            'question' => 'required',              // 问题    questions
+			'editor'   => 'nullable',              // 解答    answers
+			'line'     => 'required',              // 产品线  product_line
+			'category' => 'required',              // 分类    category_id
+			'role'     => 'required',              // 权限    is_user 
+			'show'     => 'required',              // 可看    is_display
+			'top'      => 'required',              // 置顶    is_top 
 		]);
 		// 新建问题
-		$category = Category::create([
-            'faq_category_name' => Arr::get($reqData, 'faq_category_name'),
-            'sequence'          => Arr::get($reqData, 'sequence', 100),
+		$question = Question::create([
+            'questions'       => Arr::get($reqData, 'question'),
+            'answers'         => Arr::get($reqData, 'editor'),
+            'product_line'    => Arr::get($reqData, 'line'),
+            'faq_category_id' => Arr::get($reqData, 'category'),
+            'is_user'         => Arr::get($reqData, 'role'),
+            'is_display'      => Arr::get($reqData, 'display'),
+            'is_top'          => Arr::get($reqData, 'top'),
 		])->toArray();
-
-		// 新增关系表
-		$db = DB::table('faq_productline_to_category');
-		$result = $db -> insertGetId([
-    			'product_line_id' => Arr::get($reqData, 'product_line'),
-    			'category_id' => Arr::get($category, 'id'),
-    			'active' => 1
-		]);
 
 		$res = [
             "code" => 0,
             "msg"  => "成功",
-            "data" => $category
+            "data" => $question
         ];
 		return $res;
 	}
@@ -105,14 +128,11 @@ class QuestionController extends Controller
 	// 查看问题
 	public function show($id)
 	{
-		$category = Category::findOrFail($id);
-		$db = DB::table('faq_productline_to_category');
-		$productToCategory = $db -> where('category_id', Arr::get($category, 'id')) -> first();
-		$category['product_line'] = $productToCategory -> product_line_id;
+		$question = Question::findOrFail($id, ['id', 'questions', 'answers', 'product_line', 'faq_category_id', 'is_user', 'is_display', 'is_top']);
 		$res = [
             "code" => 0,
             "msg"  => "成功",
-            "data" => $category
+            "data" => $question
         ];
 		return $res;
 	}
@@ -122,30 +142,39 @@ class QuestionController extends Controller
 	{
 		// 获取所有参数
 		$reqData = $this->request->validate([
-            'faq_category_name'    => 'required',
-			'product_line' => 'required',
-			'sequence' => 'nullable'
+            'question' => 'required',              // 问题    questions
+			'editor'   => 'required',              // 解答    answers
+			'line'     => 'required',              // 产品线  product_line
+			'category' => 'required',              // 分类    category_id
+			'role'     => 'required',              // 权限    is_user 
+			'show'     => 'required',              // 可看    is_display
+			'top'      => 'required',              // 置顶    is_top 
 		]);
 
-		// 更新关系表
-		$db = DB::table('faq_productline_to_category');
-		$db -> where('category_id', $id) -> update([
-    		'product_line_id' => Arr::get($reqData, 'product_line'),
-    	]);
+		$question = question::findOrFail($id, ['id', 'questions', 'answers', 'product_line', 'faq_category_id', 'is_user', 'is_display', 'is_top']);
 
-		$category = Category::findOrFail($id);
-		foreach($reqData  as $k => $v) {
-			if($k != 'product_line') {
-				$category[$k] = $v;
-			}
-		}
+		// 替换更改参数
+		$question['questions'] = Arr::get($reqData, 'question');
+		$question['answers'] = Arr::get($reqData, 'editor');
+		$question['product_line'] = Arr::get($reqData, 'line');
+		$question['faq_category_id'] = Arr::get($reqData, 'category');
+		$question['is_user'] = Arr::get($reqData, 'role');
+		$question['is_display'] = Arr::get($reqData, 'show');
+		$question['is_top'] = Arr::get($reqData, 'top');
+
+		// 参数名相同，批量修改参数值
+		// foreach($reqData  as $k => $v) {
+		// 	if($k != 'product_line') {
+		// 		$question[$k] = $v;
+		// 	}
+		// }
 			
-	   	$category = $category->save();
+	   	$question->save();
 
 		$res = [
             "code" => 0,
             "msg"  => "编辑成功",
-            "data" => $category
+            "data" => $question
         ];
 		return $res;
 	}
@@ -153,12 +182,12 @@ class QuestionController extends Controller
 	// 删除问题
 	public function destroy($id)
 	{	
-		$category = Category::findOrFail($id);
-		$category -> delete();
+		$question = Question::findOrFail($id, ['id', 'questions', 'answers', 'product_line', 'faq_category_id', 'is_user', 'is_display', 'is_top']);
+		$question -> delete();
 		$res = [
             "code" => 0,
             "msg"  => "删除成功",
-            "data" => $category
+            "data" => $question
         ];
 		return $res;
 	}

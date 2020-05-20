@@ -16,10 +16,24 @@ class IndexController extends Controller
 	{	
 		// 获取所有分类
 		$categories = Category::all();
-		$questions = Question::all();
+		$categoryList = $categories -> toArray();
+
 		$lines = Productline::all();
 
-		return view('faqadmin.index', compact('categories', 'questions', 'lines'));
+		// 获取所有问题
+		$questions = Question::paginate(10);
+		$questionList = $questions -> toArray();
+		// dd($questionList);
+		// 根据分类id绑定分类名称
+		$categoryList = array_column($categoryList, 'faq_category_name', 'id');
+	 	foreach ($questionList['data'] as &$question) {
+            $question['faq_category_name'] = $categoryList[$question['faq_category_id']];
+        }
+		$lastPage = $questionList['last_page'];
+		$questions = $questionList['data'];
+		// dd($questions);
+
+		return view('faqadmin.index', compact('categories', 'questions', 'lines', 'lastPage'));
 	}
 
 	/** 分类列表*/
@@ -38,5 +52,17 @@ class IndexController extends Controller
 			'last_page'=>$lastPage
 		]);
 	}
+
+	/** 关联分类名*/
+    public function attachCategoryToQuestionList(array $questionList, array $categoryList)
+    {
+        $categoryList = array_column($categoryList, 'name', 'code');
+        foreach ($articleList as &$article) {
+            $article['category_name'] = $categoryList[$article['category_code']];
+            $article['sub_category_name'] = $subCategoryList[$article['sub_category_code']];
+        }
+
+        return $articleList;
+    }
 
 }

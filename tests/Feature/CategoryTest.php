@@ -19,7 +19,9 @@ class CategoryTest extends TestCase
             'category_id' => -1, 
             'current_page' => 1
         ]);
-
+        // $this->json('post', '/api/finish_order',
+        //     ["order_id" => $order->order_id]);
+                       
         $response->assertStatus(200);
     }
 }

@@ -35,22 +35,22 @@
                 <form class="form-inline">
                     <div class="row">
                         <div class="form-group col-sm-4 col-md-4">
-                            <label for="classify">分类</label>
-                            <select class="form-control" id="classify">
-                            <option value="-1">全部</option>
-                            @foreach ($categories as $category)
-                            <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
-                            @endforeach
-                        </select>
+                            <label for="categoryId">分类</label>
+                            <select class="form-control" id="categoryId">
+                                <option value="-1">全部</option>
+                                @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->faq_category_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group col-sm-4 col-md-4">
-                            <label for="searchnum">排序</label>
-                            <select class="form-control" id="searchnum">
-                            <option value="-1">全部</option>
-                            <option value="1">按次数</option>
-                            <option value="2">按已解决次数</option>
-                            <option value="3">按未解决次数</option>
-                        </select>
+                            <label for="orderBy">排序</label>
+                            <select class="form-control" id="orderBy">
+                                <option value="-1">全部</option>
+                                <option value="1">按次数</option>
+                                <option value="2">按已解决次数</option>
+                                <option value="3">按未解决次数</option>
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -77,29 +77,29 @@
                         </thead>
                         <tbody id="tbody">
                             @foreach($questions as $question)
-                                <input type="hidden" id="faq_question_id" value="{{ $question -> faq_question_id }}">
+                                <input type="hidden" id="faq_question_id" value="{{ $question['id']}}">
                                 <tr>
                                     <td>
-                                        {{ $question->questions }}
+                                        {{ $question['questions'] }}
                                     </td>
                                     <td>
-                                        {{ $question->faq_category_name }}
+                                        {{ $question['faq_category_name'] }}
                                     </td>
                                     <td>
-                                        {{ $question->isdisplay }}
+                                        {{ $question['is_display'] ? '否' : '是' }}
                                     </td>
                                     <td>
-                                        {{ $question->viewtimes }}
+                                        {{ $question['viewtimes'] }}
                                     </td>
                                     <td>
-                                        {{ $question->resolvetimes }}
+                                        {{ $question['resolvetimes'] }}
                                     </td>
                                     <td>
-                                        {{ $question->unresolvetimes }}
+                                        {{ $question['unresolvetimes'] }}
                                     </td>
                                     <td class="text-center collapsing">
-                                        <a href="javascript:void(0);" class="edit" value="{{ $question -> faq_question_id }}">编辑</a>
-                                        <a href="javascript:void(0);" class="del" value="{{ $question -> faq_question_id }}">删除</a>
+                                        <a href="javascript:void(0);" class="edit" value="{{ $question['id'] }}">编辑</a>
+                                        <a href="javascript:void(0);" class="del" value="{{ $question['id'] }}">删除</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -132,9 +132,7 @@
                         <div class="form-group">
                             <label for="name" class="col-sm-2 control-label">解答</label>
                             <div class="col-sm-9">
-                                <div id="addeditor" style="height:250px;">
-
-                                </div>
+                                <div id="addeditor" style="height:250px;"></div>
                             </div>
                         </div>
 						<div class="form-group">
@@ -151,10 +149,10 @@
                             <label for="myRole" class="col-sm-2 control-label">分类</label>
                             <div class="col-sm-9">
                                 <select class="form-control" id="myRole">
-                                <option value="-1">选择分类</option>
-                                @foreach($categories as $category)
-                                <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
-                                @endforeach
+                                    <option value="-1">选择分类</option>
+                                    @foreach($categories as $category)
+                                    <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -162,9 +160,9 @@
                             <label for="role" class="col-sm-2 control-label">权限</label>
                             <div class="col-sm-9">
                                 <select class="form-control" id="role">
-                                <option value="-1">选择权限</option>
-                                <option value="0">公开</option>
-                                <option value="1">仅员工可见</option>
+                                    <option value="-1">选择权限</option>
+                                    <option value="0">公开</option>
+                                    <option value="1">仅员工可见</option>
                                 </select>
                             </div>
                         </div>
@@ -312,8 +310,11 @@
 <script type="text/javascript" src="/faq/js/wangEditor.min.js"></script>
 <script type="text/javascript">
     var _val;
-    var cnt = '$cnt';
-
+    var isSearching = false
+    var lastPage = {{$lastPage}}
+    var currentPage = 1
+    var categoryId = -1
+    var orderBy = -1
 
     wangEditor.config.printLog = false;
     wangEditor.config.uploadImgUrl = '/pofolio.php?action=upload';
@@ -383,59 +384,14 @@
             _val = this.getAttribute("value");
             $("#delcfmModal").modal("show")
         })
-        var _classify = $('#classify').val();
-        var _searchnum = $('#searchnum').val();
+        var categoryId = $('#categoryId').val();
+        var orderBy = $('#orderBy').val();
         // 分页初始化 
         var options = {
-            totalPages: cnt,
+            totalPages: lastPage,
             onPageClicked: function(event, originalEvent, type, page) {
-                _classify = $('#classify').val();
-                _searchnum = $('#searchnum').val();
-                $.ajax({
-                    url: '/qyapp.php?s=/faq/admin/index',
-                    type: 'post',
-                    dataType: 'json',
-                    data: {
-                        page: page,
-                        category: _classify,
-                        searchmun: _searchnum
-                    },
-                    success: function(d) {
-                        if (d) {
-                            $("#tbody").empty();
-                            for (var i = 0; i < d.data.length; i++) {
-                                var html = '<tr>' +
-                                    '<td>' + d.data[i].questions +
-                                    '</td>' +
-                                    '<td>' +
-                                    d.data[i].faq_category_name +
-                                    '</td>' +
-                                    '<td>' +
-                                    d.data[i].isdisplay +
-                                    '</td>' +
-                                    '<td>' +
-                                    d.data[i].viewtimes +
-                                    '</td>' +
-                                    '<td>' +
-                                    d.data[i].resolvetimes +
-                                    '</td>' +
-                                    '<td>' +
-                                    d.data[i].unresolvetimes +
-                                    '</td>' +
-                                    '<td class = "text-center collapsing" >' +
-                                    '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].faq_question_id + '" onclick="editques(' + d.data[i].faq_question_id + ')"> 编辑 </a>' +
-                                    '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].faq_question_id + '" onclick="delques(' + d.data[i].faq_question_id + ')"> 删除 </a>' +
-                                    '</td>' +
-                                    '</tr>';
-                                $("#tbody").append(html);
-                            }
-
-                        }
-                    },
-                    error: function(err) {
-                        alert("接口请求失败");
-                    }
-                });
+                currentPage = page
+                getList()
             }
         };
         $('#Pages').bootstrapPaginator(options);
@@ -448,7 +404,67 @@
         })
     })
 
-    function pagesinit() {}
+    function getList() {
+        $.ajax({
+            url: '/api/faq/questions',
+            type: 'get',
+            data: {
+                category_id: categoryId,
+                order_by: orderBy,
+                current_page: currentPage
+            },
+            success: function(d) {
+                if (d.code == 0) {
+                    $("#tbody").empty();
+                    for (var i = 0; i < d.data.length; i++) {
+                        var html = '<tr>' +
+                            '<td>' + d.data[i].questions +
+                            '</td>' +
+                            '<td>' +
+                            d.data[i].faq_category_name +
+                            '</td>' +
+                            '<td>' +
+                            d.data[i].is_display +
+                            '</td>' +
+                            '<td>' +
+                            d.data[i].viewtimes +
+                            '</td>' +
+                            '<td>' +
+                            d.data[i].resolvetimes +
+                            '</td>' +
+                            '<td>' +
+                            d.data[i].unresolvetimes +
+                            '</td>' +
+                            '<td class = "text-center collapsing" >' +
+                            '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].id + '" onclick="editques(' + d.data[i].id + ')"> 编辑 </a>' +
+                            '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].id + '" onclick="delques(' + d.data[i].id + ')"> 删除 </a>' +
+                            '</td>' +
+                            '</tr>';
+                        $("#tbody").append(html);
+                    }
+                    if(isSearching){
+                        pagesinit(d.total)
+                        isSearching = false
+                    }
+
+                }
+            },
+            error: function(err) {
+                alert("接口请求失败");
+            }
+        });
+    }
+
+    function pagesinit(total) {
+        var options = {
+            totalPages: Math.ceil(total/10),
+            onPageClicked: function(event, originalEvent, type, page) {
+                currentPage = page
+                getList()
+            }
+        };
+        $('#Pages').bootstrapPaginator("setOptions", options);
+    }
 
     function editques(k) {
         _val = k
@@ -462,105 +478,11 @@
     }
 
     function search() {
-        var _classify = $('#classify').val();
-        var _searchnum = $('#searchnum').val();
-        $.ajax({
-            url: '/qyapp.php?s=/faq/admin/index',
-            type: 'post',
-            dataType: 'json',
-            data: {
-                page: 1,
-                category: _classify,
-                searchmun: _searchnum
-            },
-            success: function(d) {
-                if (d) {
-                    $("#tbody").empty();
-                    for (var i = 0; i < d.data.length; i++) {
-                        var html = '<tr>' +
-                            '<td>' + d.data[i].questions +
-                            '</td>' +
-                            '<td>' +
-                            d.data[i].faq_category_name +
-                            '</td>' +
-                            '<td>' +
-                            d.data[i].isdisplay +
-                            '</td>' +
-                            '<td>' +
-                            d.data[i].viewtimes +
-                            '</td>' +
-                            '<td>' +
-                            d.data[i].resolvetimes +
-                            '</td>' +
-                            '<td>' +
-                            d.data[i].unresolvetimes +
-                            '</td>' +
-                            '<td class = "text-center collapsing" >' +
-                            '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].faq_question_id + '" onclick="editques(' + d.data[i].faq_question_id + ')"> 编辑 </a>' +
-                            '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].faq_question_id + '" onclick="delques(' + d.data[i].faq_question_id + ')"> 删除 </a>' +
-                            '</td>' +
-                            '</tr>';
-                        $("#tbody").append(html);
-                    };
-                    var options = {
-                        totalPages: d.cnt,
-                        onPageClicked: function(event, originalEvent, type, page) {
-                            _classify = $('#classify').val();
-                            _searchnum = $('#searchnum').val();
-                            $.ajax({
-                                url: '/qyapp.php?s=/faq/admin/index',
-                                type: 'post',
-                                dataType: 'json',
-                                data: {
-                                    page: page,
-                                    category: _classify,
-                                    searchmun: _searchnum
-                                },
-                                success: function(d) {
-                                    if (d) {
-                                        $("#tbody").empty();
-                                        for (var i = 0; i < d.data.length; i++) {
-                                            var html = '<tr>' +
-                                                '<td>' + d.data[i].questions +
-                                                '</td>' +
-                                                '<td>' +
-                                                d.data[i].faq_category_name +
-                                                '</td>' +
-                                                '<td>' +
-                                                d.data[i].isdisplay +
-                                                '</td>' +
-                                                '<td>' +
-                                                d.data[i].viewtimes +
-                                                '</td>' +
-                                                '<td>' +
-                                                d.data[i].resolvetimes +
-                                                '</td>' +
-                                                '<td>' +
-                                                d.data[i].unresolvetimes +
-                                                '</td>' +
-                                                '<td class = "text-center collapsing" >' +
-                                                '<a href = "javascript:void(0);" class="edit" value= "' + d.data[i].faq_question_id + '" onclick="editques(' + d.data[i].faq_question_id + ')"> 编辑 </a>' +
-                                                '<a href = "javascript:void(0);" class="del" value= "' + d.data[i].faq_question_id + '" onclick="delques(' + d.data[i].faq_question_id + ')"> 删除 </a>' +
-                                                '</td>' +
-                                                '</tr>';
-                                            $("#tbody").append(html);
-                                        }
-
-                                    }
-                                },
-                                error: function(err) {
-                                    alert("接口请求失败");
-                                }
-                            });
-                        }
-                    };
-                    $('#Pages').bootstrapPaginator(options);
-                }
-            },
-            error: function(err) {
-                alert("接口请求失败");
-            }
-        });
+        currentPage = 1
+        categoryId = $('#categoryId').val();
+        orderBy = $('#orderBy').val();
+        isSearching = true
+        getList()
     }
 
     function addQuestion() {
@@ -617,17 +539,16 @@
         }
 
         $.ajax({
-            url: '/qyapp.php?s=/faq/admin/addquestionmodal',
+            url: '/api/faq/questions',
             type: 'post',
-            dataType: 'json',
             data: {
-                txtquestion: _txtquestion,
-                addeditor: _addeditor,
-                myRole: _myRole,
-                role: _role,
-                radioisshow: _radioisshow,
-                radioistop: _radioistop,
-                checkbox: checkboxVal
+                question: _txtquestion,
+                editor: _addeditor,
+                line: _myRole,
+                category: _role,
+                role: _checkboxVal,
+                show: _radioisshow,
+                top: _radioistop,
             },
             success: function(d) {
                 if (d.code) {
@@ -755,18 +676,16 @@
         }
 
         $.ajax({
-            url: '/qyapp.php?s=/faq/admin/edit',
-            type: 'post',
-            dataType: 'json',
+            url: '/api/faq/questions/' + _val,
+            type: 'patch',
             data: {
-                faq_question_id: _val,
-                txtquestion: _edittxt,
-                editor: _editeditor,
-                myRole: _editmyRole,
-                role: _editrole,
-                radioisshow: _radioeditisshow,
-                radioistop: _radioeditistop,
-                editCheckBox: editCheckboxVal
+                question: _txtquestion,
+                editor: _addeditor,
+                line: _myRole,
+                category: _role,
+                role: _checkboxVal,
+                show: _radioisshow,
+                top: _radioistop,
             },
             success: function(d) {
                 if (d.code) {
@@ -782,16 +701,12 @@
         });
     }
 
-    function delQuestion() {
+    function delQuestion(id) {
         $.ajax({
-            url: '/qyapp.php?s=/faq/admin/del',
-            type: 'post',
-            dataType: 'json',
-            data: {
-                faq_question_id: _val
-            },
+            url: '/api/faq/questions/' + _val,
+            type: 'delete',
             success: function(d) {
-                if (d.code) {
+                if (d.code == 0) {
                     alert("删除成功");
                     window.location.reload();
                 } else {
