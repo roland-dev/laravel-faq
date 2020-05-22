@@ -113,7 +113,7 @@ class QuestionController extends Controller
             'product_line'    => Arr::get($reqData, 'line'),
             'faq_category_id' => Arr::get($reqData, 'category'),
             'is_user'         => Arr::get($reqData, 'role'),
-            'is_display'      => Arr::get($reqData, 'display'),
+            'is_display'      => Arr::get($reqData, 'show'),
             'is_top'          => Arr::get($reqData, 'top'),
 		])->toArray();
 

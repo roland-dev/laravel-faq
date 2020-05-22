@@ -21,13 +21,13 @@ class IndexController extends Controller
 		$lines = Productline::all();
 
 		// 获取所有问题
-		$questions = Question::paginate(10);
+		$questions = Question::orderBy('create_time', 'desc') -> paginate(10);
 		$questionList = $questions -> toArray();
 		// dd($questionList);
 		// 根据分类id绑定分类名称
 		$categoryList = array_column($categoryList, 'faq_category_name', 'id');
 	 	foreach ($questionList['data'] as &$question) {
-            $question['faq_category_name'] = $categoryList[$question['faq_category_id']];
+			$question['faq_category_name'] = $categoryList[$question['faq_category_id']];
         }
 		$lastPage = $questionList['last_page'];
 		$questions = $questionList['data'];

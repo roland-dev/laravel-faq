@@ -86,7 +86,7 @@
                                         {{ $question['faq_category_name'] }}
                                     </td>
                                     <td>
-                                        {{ $question['is_display'] ? '否' : '是' }}
+                                        {{ $question['is_display'] ? '是' : '否' }}
                                     </td>
                                     <td>
                                         {{ $question['viewtimes'] }}
@@ -151,7 +151,7 @@
                                 <select class="form-control" id="myRole">
                                     <option value="-1">选择分类</option>
                                     @foreach($categories as $category)
-                                    <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->faq_category_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -227,7 +227,7 @@
 							<div class="checkbox">
                                 @foreach($lines as $line)
                                     <label>
-                                        <input type="checkbox" name="additem" id="{{ $line->id }}" value="{{ $line->id }}"  checked = "checked" >{{ $line->product_line_name }}
+                                        <input type="checkbox" name="edititem" id="{{ $line->id }}" value="{{ $line->id }}"  checked = "checked" >{{ $line->product_line_name }}
                                     </label>
                                 @endforeach
 							</div>
@@ -239,7 +239,7 @@
                                 <select class="form-control" id="editmyRole">
                                     <option value="-1">选择分类</option>
                                     @foreach($categories as $category)
-                                    <option value="{{ $category->faq_category_id }}">{{ $category->faq_category_name }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->faq_category_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -417,6 +417,7 @@
                 if (d.code == 0) {
                     $("#tbody").empty();
                     for (var i = 0; i < d.data.length; i++) {
+                        d.data[i].is_display = d.data[i].is_display ? "是" : "否"
                         var html = '<tr>' +
                             '<td>' + d.data[i].questions +
                             '</td>' +
@@ -537,21 +538,24 @@
         if ($('#toTop2').prop('checked') == true) {
             var _radioistop = 0;
         }
+        var resData = {
+            question: _txtquestion,
+            editor: _addeditor,
+            line: checkboxVal.join(','),
+            category: _myRole,
+            role: _role,
+            show: _radioisshow,
+            top: _radioistop,
+        }
+        console.log(resData)
+        // return
 
         $.ajax({
             url: '/api/faq/questions',
             type: 'post',
-            data: {
-                question: _txtquestion,
-                editor: _addeditor,
-                line: _myRole,
-                category: _role,
-                role: _checkboxVal,
-                show: _radioisshow,
-                top: _radioistop,
-            },
+            data: resData,
             success: function(d) {
-                if (d.code) {
+                if (d.code == 0) {
                     alert("添加成功");
                     window.location.reload();
                 } else {
@@ -566,14 +570,10 @@
 
     function getquestionmsg(k) {
         $.ajax({
-            url: '/qyapp.php?s=/faq/admin/getmsg',
-            type: 'post',
-            dataType: 'json',
-            data: {
-                faq_question_id: _val
-            },
+            url: '/api/faq/questions/' + _val,
+            type: 'get',
             success: function(d) {
-                if (d.code == 1) {
+                if (d.code == 0) {
                     endow(d.data);
                 }
             },
@@ -601,7 +601,7 @@
                 break;
             }
         }
-        if (val.isdisplay == 1) {
+        if (val.is_display == 1) {
             $('#editisShow1').prop('checked', true);
         } else {
             $('#editisShow2').prop('checked', true);
@@ -611,9 +611,12 @@
 		{ 
 			this.checked = false; 
     	});
-
-		for(var i = 0; i < val.product_line_id.length;i++) {
-			$(':checkbox[value="'+val.product_line_id[i]+'"]').prop('checked', 'checked');
+        console.log(val)
+        val.product_line_id = val.product_line.split(',')
+         $('[name=edititem]').prop('checked', false);
+		for(var i = 0; i < val.product_line_id.length; i++) {
+			// $(':checkbox[value="'+val.product_line_id[i]+'"]').prop('checked', 'checked');
+            $('[name=edititem]').eq(val.product_line_id[i]).prop('checked', 'checked');
 		}
 
         if (val.is_top == 1) {
@@ -631,7 +634,7 @@
 
 		var editCheckboxVal = [];
         editCheckboxVal.length = 0;
-        $('[name=edit]:checkbox:checked').each(function(i){
+        $('[name=edititem]:checkbox:checked').each(function(i){
           editCheckboxVal[i] = $(this).val();
         });
         if(editCheckboxVal.length == 0 ){
@@ -674,21 +677,22 @@
             alert("权限不能为空!");
             return false;
         }
+        var resData = {
+            question: _edittxt,
+            editor: _editeditor,
+            line: editCheckboxVal.join(','),
+            category: _editmyRole,
+            role: _editrole,
+            show: _radioeditisshow,
+            top: _radioeditistop,
+        }
 
         $.ajax({
             url: '/api/faq/questions/' + _val,
             type: 'patch',
-            data: {
-                question: _txtquestion,
-                editor: _addeditor,
-                line: _myRole,
-                category: _role,
-                role: _checkboxVal,
-                show: _radioisshow,
-                top: _radioistop,
-            },
+            data: resData,
             success: function(d) {
-                if (d.code) {
+                if (d.code == 0) {
                     alert("编辑成功");
                     window.location.reload();
                 } else {
